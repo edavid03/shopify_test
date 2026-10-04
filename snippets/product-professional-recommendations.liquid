@@ -1,0 +1,412 @@
+{%- comment -%}
+  Recomendado por profesionales
+  Accepts:
+  - product: {Object} Product object (defaults to the product in context)
+  - block: {Object} Optional block, used for shopify_attributes
+{%- endcomment -%}
+
+{%- liquid
+  assign recs_product = product
+  if request.visual_preview_mode and recs_product == blank
+    assign recs_product = collections.all.products.first
+  endif
+  assign recommendations = recs_product.metafields.custom.recommendations.value
+  assign stores = recs_product.metafields.custom.image_stores.value
+  assign stores_text = stores.text.value
+  assign stores_images = stores.image.value
+  assign uid = block.id | default: 'section'
+-%}
+
+{%- if recommendations != blank -%}
+  <div
+    class="pro-recs"
+    data-pro-recs
+    {{ block.shopify_attributes }}
+  >
+    <h2 class="pro-recs__heading">Recomendado por profesionales</h2>
+
+    <div class="pro-recs__tabs" role="tablist" aria-label="Recomendado por profesionales">
+      {%- for rec in recommendations -%}
+        {%- assign category = rec.category.value | default: rec.name.value -%}
+        <button
+          type="button"
+          class="pro-recs__tab{% if forloop.first %} is-active{% endif %}"
+          role="tab"
+          id="pro-recs-tab-{{ uid }}-{{ forloop.index0 }}"
+          aria-controls="pro-recs-panel-{{ uid }}-{{ forloop.index0 }}"
+          aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+          tabindex="{% if forloop.first %}0{% else %}-1{% endif %}"
+          data-pro-recs-tab
+        >
+          {{- category | escape -}}
+        </button>
+      {%- endfor -%}
+    </div>
+
+    <div class="pro-recs__panels">
+      {%- for rec in recommendations -%}
+        {%- liquid
+          assign rec_photo = rec.image.value
+          assign rec_quote = rec.text.value
+          assign rec_name = rec.name.value
+          assign rec_role = rec.role.value
+          assign rec_logo = rec.company_logo.value
+        -%}
+        <div
+          class="pro-recs__panel{% if forloop.first %} is-active{% endif %}"
+          role="tabpanel"
+          id="pro-recs-panel-{{ uid }}-{{ forloop.index0 }}"
+          aria-labelledby="pro-recs-tab-{{ uid }}-{{ forloop.index0 }}"
+          data-pro-recs-panel
+          {% unless forloop.first %}hidden{% endunless %}
+        >
+          <div class="pro-recs__grid">
+            {%- if rec_photo != blank -%}
+              <div class="pro-recs__photo">
+                {{
+                  rec_photo
+                  | image_url: width: 600
+                  | image_tag:
+                    class: 'pro-recs__photo-img',
+                    loading: 'lazy',
+                    widths: '300, 450, 600, 900',
+                    sizes: '(min-width: 768px) 40vw, 100vw',
+                    alt: rec_photo.alt
+                }}
+              </div>
+            {%- endif -%}
+
+            <div class="pro-recs__content">
+              {%- if rec_quote != blank -%}
+                <blockquote class="pro-recs__quote">{{ rec_quote | escape | newline_to_br }}</blockquote>
+              {%- endif -%}
+              {%- if rec_name != blank -%}
+                <p class="pro-recs__name">{{ rec_name | escape }}</p>
+              {%- endif -%}
+              {%- if rec_role != blank -%}
+                <p class="pro-recs__role">{{ rec_role | escape }}</p>
+              {%- endif -%}
+              {%- if rec_logo != blank -%}
+                <div class="pro-recs__company-logo">
+                  {{
+                    rec_logo
+                    | image_url: width: 400
+                    | image_tag: loading: 'lazy', alt: rec_name
+                  }}
+                </div>
+              {%- endif -%}
+
+              {%- if recommendations.size > 1 -%}
+                <div class="pro-recs__nav">
+                  <button type="button" class="pro-recs__arrow" data-pro-recs-prev aria-label="Anterior">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                  </button>
+                  <button type="button" class="pro-recs__arrow" data-pro-recs-next aria-label="Siguiente">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                  </button>
+                </div>
+              {%- endif -%}
+            </div>
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+
+    {%- if stores_text != blank or stores_images != blank -%}
+      <div class="pro-recs__retailers">
+        {%- if stores_text != blank -%}
+          <p class="pro-recs__retailers-title">{{ stores_text | escape }}</p>
+        {%- endif -%}
+        <div class="pro-recs__retailers-list">
+          {%- for logo in stores_images -%}
+            {{
+              logo
+              | image_url: width: 200
+              | image_tag:
+                class: 'pro-recs__retailer-logo',
+                loading: 'lazy',
+                height: 45,
+                alt: logo.alt
+            }}
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  .pro-recs {
+    grid-column: 1 / -1;
+    width: 100%;
+    padding-block: 56px;
+    background: #F6F6F6;
+    box-shadow: 0 0 0 100vmax #F6F6F6;
+    clip-path: inset(0 -100vmax);
+    color: #0E3B2E;
+  }
+
+  .pro-recs > * {
+    max-width: 860px;
+    margin-inline: auto;
+  }
+
+  .pro-recs__heading {
+    margin: 0 0 20px;
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 1.2;
+    color: #0E3B2E;
+  }
+
+  .pro-recs__tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .pro-recs__tab {
+    min-height: 44px;
+    padding: 0 32px;
+    border: 0;
+    border-radius: 999px;
+    background: #EAECEB;
+    color: #55665F;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  .pro-recs__tab:hover {
+    background: #DDE1DF;
+  }
+
+  .pro-recs__tab.is-active {
+    background: #1A7F56;
+    color: #FFFFFF;
+  }
+
+  .pro-recs__tab:focus-visible,
+  .pro-recs__arrow:focus-visible {
+    outline: 3px solid #EA580C;
+    outline-offset: 2px;
+  }
+
+  .pro-recs__panel[hidden] {
+    display: none;
+  }
+
+  .pro-recs__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+    align-items: start;
+  }
+
+  .pro-recs__photo-img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 5 / 4;
+    object-fit: cover;
+    border: 1px solid #C9D1CD;
+    border-radius: 12px;
+  }
+
+  .pro-recs__content {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'quote quote'
+      'name logo'
+      'role logo'
+      'nav nav';
+    column-gap: 24px;
+    align-content: start;
+  }
+
+  .pro-recs__quote {
+    grid-area: quote;
+    margin: 0 0 20px;
+    font-size: 18px;
+    font-style: italic;
+    font-weight: 400;
+    line-height: 1.6;
+    color: #0E3B2E;
+  }
+
+  .pro-recs__name {
+    grid-area: name;
+    align-self: end;
+    margin: 0;
+    font-size: 15px;
+    font-weight: 800;
+    color: #0E3B2E;
+  }
+
+  .pro-recs__role {
+    grid-area: role;
+    margin: 4px 0 0;
+    font-size: 13px;
+    color: #55665F;
+  }
+
+  .pro-recs__company-logo {
+    grid-area: logo;
+    align-self: center;
+    margin: 0;
+  }
+
+  .pro-recs__company-logo img {
+    display: block;
+    width: auto;
+    max-width: 140px;
+    height: auto;
+    max-height: 48px;
+    object-fit: contain;
+  }
+
+  .pro-recs__nav {
+    grid-area: nav;
+    display: flex;
+    gap: 12px;
+    margin-top: 28px;
+  }
+
+  .pro-recs__arrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid #E0E4E2;
+    border-radius: 50%;
+    background: #FFFFFF;
+    color: #0E3B2E;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  }
+
+  .pro-recs__arrow:hover {
+    background: #1A7F56;
+    border-color: #1A7F56;
+    color: #FFFFFF;
+  }
+
+  .pro-recs__retailers {
+    margin-top: 64px;
+    text-align: center;
+  }
+
+  .pro-recs__retailers-title {
+    margin: 0 0 24px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #0E3B2E;
+  }
+
+  .pro-recs__retailers-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 24px 48px;
+  }
+
+  .pro-recs__retailer-logo {
+    width: auto;
+    max-width: 150px;
+    height: auto;
+    max-height: 48px;
+    object-fit: contain;
+  }
+
+  @media screen and (min-width: 768px) {
+    .pro-recs {
+      padding-block: 72px;
+    }
+
+    .pro-recs__heading {
+      font-size: 28px;
+    }
+
+    .pro-recs__grid {
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 56px;
+    }
+  }
+
+  @media screen and (max-width: 520px) {
+    .pro-recs__content {
+      grid-template-areas:
+        'quote quote'
+        'name name'
+        'role role'
+        'logo logo'
+        'nav nav';
+    }
+
+    .pro-recs__company-logo {
+      margin-top: 16px;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  (() => {
+    const init = (root) => {
+      if (root.dataset.proRecsReady) return;
+      root.dataset.proRecsReady = 'true';
+
+      const tabs = [...root.querySelectorAll('[data-pro-recs-tab]')];
+      const panels = [...root.querySelectorAll('[data-pro-recs-panel]')];
+      let current = 0;
+
+      const show = (index, focus = false) => {
+        current = (index + tabs.length) % tabs.length;
+        tabs.forEach((tab, i) => {
+          const active = i === current;
+          tab.classList.toggle('is-active', active);
+          tab.setAttribute('aria-selected', active ? 'true' : 'false');
+          tab.tabIndex = active ? 0 : -1;
+        });
+        panels.forEach((panel, i) => {
+          const active = i === current;
+          panel.classList.toggle('is-active', active);
+          panel.hidden = !active;
+        });
+        if (focus) tabs[current].focus();
+      };
+
+      tabs.forEach((tab, i) => tab.addEventListener('click', () => show(i)));
+
+      root.addEventListener('click', (event) => {
+        if (event.target.closest('[data-pro-recs-prev]')) show(current - 1);
+        if (event.target.closest('[data-pro-recs-next]')) show(current + 1);
+      });
+
+      root.querySelector('[role="tablist"]').addEventListener('keydown', (event) => {
+        if (event.key === 'ArrowRight') {
+          event.preventDefault();
+          show(current + 1, true);
+        } else if (event.key === 'ArrowLeft') {
+          event.preventDefault();
+          show(current - 1, true);
+        }
+      });
+    };
+
+    const initAll = () => document.querySelectorAll('[data-pro-recs]').forEach(init);
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initAll);
+    } else {
+      initAll();
+    }
+    document.addEventListener('shopify:section:load', initAll);
+    document.addEventListener('shopify:block:select', initAll);
+  })();
+{% endjavascript %}

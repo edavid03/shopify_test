@@ -1,0 +1,20 @@
+{%- comment -%}
+  The testimonial is rendered once, fixed under the product photo, by
+  snippets/product-information-content.liquid. This block intentionally outputs
+  nothing so adding it in the theme editor cannot duplicate the testimonial.
+{%- endcomment -%}
+<span hidden {{ block.shopify_attributes }}></span>
+
+{% schema %}
+{
+  "name": "Testimonio Destacado",
+  "tag": null,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "El testimonio (custom.expert_testimonial) ya se muestra fijo bajo la foto del producto. Este bloque no añade otra copia."
+    }
+  ],
+  "presets": []
+}
+{% endschema %}

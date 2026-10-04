@@ -1,0 +1,902 @@
+{%- liquid
+  assign current_variant = product.selected_or_first_available_variant
+  assign mf = product.metafields.custom
+
+  assign display_title = mf.title.value | default: section.settings.headline | default: product.title
+  assign subtitle = mf.hero_subtitle.value | default: section.settings.subtitle
+  assign header_badges = mf.header_badges.value
+  assign benefits_list = mf.benefits_list.value
+  assign featured_ingredients = mf.featured_ingredients.value
+  assign dosage_table = mf.dosage_table.value
+  assign dosage_tip = mf.dosage_tip.value
+  assign testimonial = mf.expert_testimonial.value
+  assign accordion_items = mf.custom.value
+  assign videos = mf.product_videos.value
+  assign info = mf.first_nformation.value
+  assign ingredients = mf.ingredients_second.value
+  assign highlights = mf.ticker_highlights.value
+  assign rows = mf.comparison_rows.value
+  assign competitors = mf.competitors.value
+  assign titles_entry = mf.competitors_title.value
+  if titles_entry.first
+    assign titles_entry = titles_entry.first
+  endif
+
+  assign full_ingredients_content = mf.full_ingredients_content
+  assign modal_badges = mf.modal_badges.value
+  assign has_modal = false
+  if full_ingredients_content != blank or modal_badges != blank
+    assign has_modal = true
+  endif
+
+  assign part = section.settings.part | default: 'all'
+  assign show_hero = false
+  assign show_chart = false
+  assign show_ing = false
+  assign show_trust = false
+  assign show_compare = false
+  if part == 'all' or part == 'hero'
+    assign show_hero = true
+  endif
+  if part == 'all' or part == 'chart'
+    assign show_chart = true
+  endif
+  if part == 'all' or part == 'ingredients'
+    assign show_ing = true
+  endif
+  if part == 'all' or part == 'trust'
+    assign show_trust = true
+  endif
+  if part == 'all' or part == 'compare'
+    assign show_compare = true
+  endif
+
+  assign ingredient_blocks = section.blocks | where: 'type', 'ingredient'
+  assign faq_blocks = section.blocks | where: 'type', 'faq'
+  assign compare_blocks = section.blocks | where: 'type', 'compare_row'
+  assign trust_blocks = section.blocks | where: 'type', 'trust'
+
+  assign ing_has = false
+  if ingredients != blank or ingredient_blocks.size > 0
+    assign ing_has = true
+  endif
+  assign modal_here = false
+  if has_modal
+    if show_hero or show_ing
+      assign modal_here = true
+    endif
+  endif
+  assign cmp_has = false
+  if rows != blank or compare_blocks.size > 0
+    assign cmp_has = true
+  endif
+-%}
+
+{%- capture lz_check -%}<svg class="lz-check" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"></path></svg>{%- endcapture -%}
+
+<div class="lz" id="Lienzo-{{ section.id }}">
+  {%- if show_hero -%}
+  <section class="lz-hero">
+    <div class="lz-hero__grid">
+      <div class="lz-gallery">
+        <div class="lz-gallery__main">
+          {%- if section.settings.badge != blank -%}
+            <span class="lz-gallery__badge">{{ section.settings.badge | escape }}</span>
+          {%- endif -%}
+          {%- if product.featured_media -%}
+            {{ product.featured_media | image_url: width: 1200 | image_tag: class: 'lz-gallery__img', data-lz-main: '', alt: product.featured_media.alt | default: product.title, sizes: '(min-width: 990px) 50vw, 100vw' }}
+          {%- else -%}
+            {{ 'product-1' | placeholder_svg_tag: 'lz-gallery__img' }}
+          {%- endif -%}
+          <div class="lz-gallery__pills">
+            {%- for i in (1..3) -%}
+              {%- assign pill_key = 'pill_' | append: i -%}
+              {%- if section.settings[pill_key] != blank -%}
+                <span class="lz-pill-dark">{{ section.settings[pill_key] | escape }}</span>
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+        </div>
+        {%- if product.media.size > 1 -%}
+          <div class="lz-gallery__thumbs">
+            {%- for media in product.media limit: 7 -%}
+              <button type="button" class="lz-thumb{% if forloop.first %} is-active{% endif %}" data-lz-thumb="{{ media.preview_image | image_url: width: 1200 }}" aria-label="{{ media.alt | default: product.title | escape }}">
+                {{ media.preview_image | image_url: width: 160 | image_tag: alt: '' }}
+              </button>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+
+        {%- liquid
+          assign quote = section.settings.quote
+          assign quote_name = section.settings.quote_name
+          assign quote_role = section.settings.quote_role
+          assign quote_image = section.settings.quote_image
+          if testimonial != blank
+            assign quote = testimonial.text.value
+            assign quote_name = testimonial.name.value
+            assign quote_role = testimonial.description.value
+            assign quote_image = testimonial.image.value
+          endif
+        -%}
+        {%- if quote != blank -%}
+          <figure class="lz-quote">
+            <div class="lz-quote__avatar">
+              {%- if quote_image != blank -%}
+                {{ quote_image | image_url: width: 200 | image_tag: alt: quote_name, loading: 'lazy' }}
+              {%- endif -%}
+            </div>
+            <div>
+              <blockquote>{{ quote | escape | newline_to_br }}</blockquote>
+              <figcaption><strong>{{ quote_name | escape }}</strong><br>{{ quote_role | escape }}</figcaption>
+            </div>
+          </figure>
+        {%- endif -%}
+      </div>
+
+      <div class="lz-buy">
+        <div class="lz-buy__head">
+          <div class="lz-chips">
+            {%- if header_badges != blank -%}
+              {%- for badge in header_badges -%}<span class="lz-chip">{{ badge | escape }}</span>{%- endfor -%}
+            {%- else -%}
+              {%- if section.settings.chip_1 != blank -%}<span class="lz-chip">{{ section.settings.chip_1 | escape }}</span>{%- endif -%}
+              {%- if section.settings.chip_2 != blank -%}<span class="lz-chip">{{ section.settings.chip_2 | escape }}</span>{%- endif -%}
+            {%- endif -%}
+          </div>
+          <h1 class="lz-title">{{ display_title | escape }}</h1>
+          {%- if subtitle != blank -%}
+            <p class="lz-subtitle">{{ subtitle | escape }}</p>
+          {%- endif -%}
+          {%- if section.settings.review_count != blank -%}
+            <a class="lz-rating" href="{{ section.settings.review_url | default: '#' }}">
+              <span class="lz-stars" aria-hidden="true">★★★★★</span>
+              <span>{{ section.settings.review_intro | escape }} <strong>{{ section.settings.review_count | escape }} {{ section.settings.review_outro | escape }}</strong></span>
+            </a>
+          {%- endif -%}
+        </div>
+        <hr class="lz-rule">
+
+        <div class="lz-tabs" data-lz-tabs>
+          <div class="lz-tabs__list" role="tablist">
+            <button type="button" role="tab" class="lz-tab is-active" aria-selected="true" data-lz-tab="0">{{ section.settings.tab_1_label | escape }}</button>
+            <button type="button" role="tab" class="lz-tab" aria-selected="false" data-lz-tab="1">{{ section.settings.tab_2_label | escape }}</button>
+            <button type="button" role="tab" class="lz-tab" aria-selected="false" data-lz-tab="2">{{ section.settings.tab_3_label | escape }}</button>
+          </div>
+          <div class="lz-tabs__panel" role="tabpanel" data-lz-panel="0">
+            {%- if benefits_list != blank -%}
+              <ul class="lz-list">
+                {%- for benefit in benefits_list -%}
+                  <li>{{ lz_check }}<span>{{ benefit | escape }}</span></li>
+                {%- endfor -%}
+              </ul>
+            {%- else -%}
+              <div class="lz-checks">{{ section.settings.tab_1_content }}</div>
+            {%- endif -%}
+          </div>
+          <div class="lz-tabs__panel" role="tabpanel" data-lz-panel="1" hidden>
+            <div class="lz-tab-ingredients">
+              <p>{{ section.settings.ingredients_heading | escape }}</p>
+              {%- if featured_ingredients != blank -%}
+                {%- for ingredient in featured_ingredients -%}
+                  <div class="lz-mini-ing">
+                    <span class="lz-mini-ing__img">
+                      {%- if ingredient.image.value != blank -%}{{ ingredient.image.value | image_url: width: 120 | image_tag: alt: '', loading: 'lazy' }}{%- endif -%}
+                    </span>
+                    <div><strong>{{ ingredient.name.value | escape }}</strong><br>{{ ingredient.description.value | escape }}</div>
+                  </div>
+                {%- endfor -%}
+              {%- else -%}
+                {%- for block in ingredient_blocks limit: 3 -%}
+                  <div class="lz-mini-ing">
+                    <span class="lz-mini-ing__img">{%- if block.settings.image != blank -%}{{ block.settings.image | image_url: width: 120 | image_tag: alt: '' }}{%- endif -%}</span>
+                    <div><strong>{{ block.settings.name | escape }}</strong><br>{{ block.settings.short | escape }}</div>
+                  </div>
+                {%- endfor -%}
+              {%- endif -%}
+              {%- if has_modal -%}
+                <button type="button" class="lz-btn-coral" aria-haspopup="dialog" aria-controls="LienzoModal-{{ section.id }}" data-lz-modal-open>
+                  {{ section.settings.ingredients_button | escape }}
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+                </button>
+              {%- else -%}
+                <a class="lz-btn-coral" href="#LienzoIngredientes">{{ section.settings.ingredients_button | escape }}</a>
+              {%- endif -%}
+            </div>
+          </div>
+          <div class="lz-tabs__panel" role="tabpanel" data-lz-panel="2" hidden>
+            {%- if dosage_table != blank -%}
+              <table class="lz-dose">
+                <thead><tr><th scope="col">{{ section.settings.dose_col_1 | escape }}</th><th scope="col">{{ section.settings.dose_col_2 | escape }}</th></tr></thead>
+                <tbody>
+                  {%- for rule in dosage_table -%}
+                    <tr>
+                      <td>{{ rule.weight_range.value | escape }}</td>
+                      <td>
+                        {%- if rule.button_label.value != blank -%}
+                          <a class="lz-btn-coral lz-btn-coral--small" href="{{ rule.button_url.value | default: '#' }}">{{ rule.button_label.value | escape }}</a>
+                        {%- elsif rule.dosage_text.value != blank -%}
+                          {{ rule.dosage_text.value | escape }}
+                        {%- elsif rule.scoop_count.value != blank -%}
+                          {{ rule.scoop_count.value }} {{ section.settings.scoop_label | escape }}
+                        {%- endif -%}
+                      </td>
+                    </tr>
+                  {%- endfor -%}
+                </tbody>
+              </table>
+              {%- if dosage_tip != blank -%}<p class="lz-dose__tip">{{ dosage_tip | escape | newline_to_br }}</p>{%- endif -%}
+            {%- else -%}
+              <div class="lz-dosage">{{ section.settings.tab_3_content }}</div>
+            {%- endif -%}
+          </div>
+        </div>
+
+        <div class="lz-card">
+          <div class="lz-card__inner">
+            {%- if section.settings.tip != blank -%}
+              <div class="lz-tip">{{ section.settings.tip }}</div>
+            {%- endif -%}
+            {%- form 'product', product, class: 'lz-form', data-lz-form: '' -%}
+              {%- if product.has_only_default_variant == false -%}
+                <div class="lz-step">
+                  <p class="lz-step__label"><span class="lz-step__num">1</span>{{ section.settings.step_1_label | escape }}</p>
+                  <div class="lz-variants">
+                    {%- for variant in product.variants -%}
+                      <label class="lz-variant">
+                        <input type="radio" name="id" value="{{ variant.id }}" {% if variant.id == current_variant.id %}checked{% endif %}{% unless variant.available %} disabled{% endunless %} data-lz-price="{{ variant.price | money }}">
+                        <span class="lz-variant__radio" aria-hidden="true"></span>
+                        <span class="lz-variant__text">
+                          <span class="lz-variant__title">{{ variant.title | escape }}</span>
+                          {%- if variant.compare_at_price > variant.price -%}
+                            <span class="lz-variant__save">{{ section.settings.save_label | escape }} {{ variant.compare_at_price | minus: variant.price | money }}</span>
+                          {%- endif -%}
+                        </span>
+                        <span class="lz-variant__price">{{ variant.price | money }}</span>
+                      </label>
+                    {%- endfor -%}
+                  </div>
+                </div>
+              {%- else -%}
+                <input type="hidden" name="id" value="{{ current_variant.id }}">
+              {%- endif -%}
+              <button type="submit" name="add" class="lz-cta"{% unless current_variant.available %} disabled{% endunless %}>
+                {%- if current_variant.available -%}
+                  {{ section.settings.cta_label | escape }} · <span data-lz-cta-price>{{ current_variant.price | money }}</span>
+                {%- else -%}
+                  {{ 'products.product.sold_out' | t }}
+                {%- endif -%}
+              </button>
+            {%- endform -%}
+            <div class="lz-assure">
+              {%- if section.settings.assure_1 != blank -%}<span>{{ section.settings.assure_1 | escape }}</span>{%- endif -%}
+              {%- if section.settings.assure_2 != blank -%}<span>{{ section.settings.assure_2 | escape }}</span>{%- endif -%}
+              {%- if section.settings.assure_3 != blank -%}<span>{{ section.settings.assure_3 | escape }}</span>{%- endif -%}
+            </div>
+          </div>
+        </div>
+
+        {%- if accordion_items != blank -%}
+          <div class="lz-acc">
+            {%- for item in accordion_items -%}
+              <details class="lz-acc__item"{% if forloop.first %} open{% endif %}>
+                <summary class="lz-acc__q">{{ item.title.value | escape }}<span class="lz-acc__sign" aria-hidden="true"></span></summary>
+                <div class="lz-acc__a">
+                  {%- if item.intro_text.value != blank -%}<p>{{ item.intro_text.value | escape | newline_to_br }}</p>{%- endif -%}
+                  {%- if item.check_list.value != blank -%}
+                    <ul class="lz-list">
+                      {%- for check_item in item.check_list.value -%}<li>{{ lz_check }}<span>{{ check_item | escape }}</span></li>{%- endfor -%}
+                    </ul>
+                  {%- endif -%}
+                  {%- if item.steps.value != blank -%}
+                    <div class="lz-steps">
+                      {%- for step in item.steps.value -%}
+                        <div class="lz-steps__item">
+                          <span class="lz-steps__num">{{ step.step_number.value | default: forloop.index }}</span>
+                          <div><strong>{{ step.title.value | escape }}</strong><br>{{ step.description.value | escape | newline_to_br }}</div>
+                        </div>
+                      {%- endfor -%}
+                    </div>
+                  {%- endif -%}
+                  {%- if item.outro_text.value != blank -%}<p>{{ item.outro_text.value | escape }}</p>{%- endif -%}
+                </div>
+              </details>
+            {%- endfor -%}
+          </div>
+        {%- elsif faq_blocks.size > 0 -%}
+          <div class="lz-acc">
+            {%- for block in faq_blocks -%}
+              <details class="lz-acc__item" {{ block.shopify_attributes }}{% if forloop.first %} open{% endif %}>
+                <summary class="lz-acc__q">{{ block.settings.question | escape }}<span class="lz-acc__sign" aria-hidden="true"></span></summary>
+                <div class="lz-acc__a">{{ block.settings.answer }}</div>
+              </details>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+
+        {%- if videos != blank -%}
+          {% render 'product-video-gallery', product: product, uid: section.id %}
+        {%- endif -%}
+      </div>
+    </div>
+  </section>
+  {%- endif -%}
+
+  {%- if modal_here -%}
+    <dialog class="lz-modal" id="LienzoModal-{{ section.id }}" aria-labelledby="LienzoModalTitle-{{ section.id }}" data-lz-modal>
+      <header class="lz-modal__header">
+        <h2 class="lz-modal__title" id="LienzoModalTitle-{{ section.id }}">{{ section.settings.modal_title | escape }}</h2>
+        <button type="button" class="lz-modal__close" aria-label="{{ section.settings.modal_close_label | escape }}" data-lz-modal-close>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+        </button>
+      </header>
+      <div class="lz-modal__body">
+        {%- if full_ingredients_content != blank -%}
+          <div class="lz-modal__rte">{{ full_ingredients_content | metafield_tag }}</div>
+        {%- endif -%}
+      </div>
+      {%- if modal_badges != blank -%}
+        <footer class="lz-modal__footer">
+          <ul class="lz-modal__badges" role="list">
+            {%- for badge in modal_badges -%}
+              {%- liquid
+                assign badge_title = badge.title.value
+                assign badge_icon = badge.icon.value
+              -%}
+              {%- if badge_title != blank or badge_icon != blank -%}
+                <li class="lz-modal__badge">
+                  {%- if badge_icon != blank -%}
+                    {{ badge_icon | image_url: width: 96 | image_tag: class: 'lz-modal__badge-img', alt: badge_title, loading: 'lazy' }}
+                  {%- endif -%}
+                  {%- if badge_title != blank -%}<span>{{ badge_title | escape }}</span>{%- endif -%}
+                </li>
+              {%- endif -%}
+            {%- endfor -%}
+          </ul>
+        </footer>
+      {%- endif -%}
+    </dialog>
+  {%- endif -%}
+
+  {%- liquid
+    assign chart_heading = section.settings.chart_heading
+    assign chart_image = blank
+    assign chart_notes = section.settings.chart_sources
+    if info != blank
+      assign chart_heading = info.title.value | default: chart_heading
+      assign chart_image = info.image.value
+      assign chart_notes = info.notes.value | default: chart_notes
+    endif
+  -%}
+  {%- if chart_heading != blank and show_chart -%}
+    <section class="lz-chart">
+      <div class="lz-chart__inner">
+        <div class="lz-chart__text">
+          <h2 class="lz-h2">{{ chart_heading | escape }}</h2>
+          {%- if info.description.value != blank -%}
+            <p>{{ info.description.value | escape | newline_to_br }}</p>
+          {%- else -%}
+            {{ section.settings.chart_text }}
+          {%- endif -%}
+        </div>
+        <figure class="lz-chart__fig">
+          {%- if chart_image != blank -%}
+            {{ chart_image | image_url: width: 1200 | image_tag: class: 'lz-chart__img', loading: 'lazy', alt: chart_image.alt | default: chart_heading, sizes: '(min-width: 900px) 50vw, 100vw' }}
+          {%- else -%}
+            <svg viewBox="0 0 400 260" width="100%" role="img" aria-label="{{ chart_heading | escape }}">
+              <line x1="40" y1="20" x2="40" y2="220" stroke="#C9D1CD"></line>
+              <line x1="40" y1="220" x2="390" y2="220" stroke="#C9D1CD"></line>
+              <line x1="40" y1="70" x2="390" y2="70" stroke="#E2E6E4" stroke-dasharray="3 4"></line>
+              <line x1="40" y1="120" x2="390" y2="120" stroke="#E2E6E4" stroke-dasharray="3 4"></line>
+              <line x1="40" y1="170" x2="390" y2="170" stroke="#E2E6E4" stroke-dasharray="3 4"></line>
+              <path d="M70 220 L100 185 L190 125 L300 72 L380 62 L380 220 Z" fill="#BFE3D6"></path>
+              <path d="M100 185 L190 125 L300 72 L380 62" fill="none" stroke="#1E6B4F" stroke-width="3"></path>
+              <circle cx="100" cy="185" r="8" fill="#fff" stroke="#1E6B4F" stroke-width="3"></circle>
+              <circle cx="190" cy="125" r="8" fill="#fff" stroke="#1E6B4F" stroke-width="3"></circle>
+              <circle cx="300" cy="72" r="14" fill="#fff" stroke="#B42318" stroke-width="3"></circle>
+              <rect x="216" y="6" width="170" height="40" rx="6" fill="#9A1F12"></rect>
+              <text x="301" y="31" text-anchor="middle" font-size="14" font-weight="800" fill="#fff">{{ section.settings.chart_stat | escape }}</text>
+              <text x="215" y="250" text-anchor="middle" font-size="12" fill="#55665F">{{ section.settings.chart_axis | escape }}</text>
+            </svg>
+          {%- endif -%}
+          {%- if chart_notes != blank -%}
+            <figcaption>{{ chart_notes | escape }}</figcaption>
+          {%- endif -%}
+        </figure>
+      </div>
+    </section>
+  {%- endif -%}
+
+  {%- if ing_has and show_ing -%}
+    <section class="lz-ing" id="LienzoIngredientes">
+      <div class="lz-ing__inner">
+        <h2 class="lz-h2 lz-center">{{ section.settings.ingredients_heading | escape }}</h2>
+        <div class="lz-ing__grid">
+          {%- if ingredients != blank -%}
+            {%- for item in ingredients -%}
+              {%- liquid
+                assign item_title = item.title.value | default: item.name.value
+                assign item_description = item.description.value | default: item.text.value
+                assign item_image = item.image.value | default: item.photo.value
+                assign item_tag = item.benefit.value | default: item.benefits.value | default: item.tag.value | default: item.badge.value | default: item.category.value | default: item.label.value
+              -%}
+              <article class="lz-ing__card">
+                <div class="lz-ing__media">
+                  {%- if item_tag != blank -%}<span class="lz-ing__tag">{{ item_tag | escape }}</span>{%- endif -%}
+                  {%- if item_image != blank -%}
+                    {{ item_image | image_url: width: 700 | image_tag: alt: item_title, loading: 'lazy' }}
+                  {%- endif -%}
+                </div>
+                <div class="lz-ing__body">
+                  <h3>{{ item_title | escape }}</h3>
+                  <p>{{ item_description | escape | newline_to_br }}</p>
+                </div>
+              </article>
+            {%- endfor -%}
+          {%- else -%}
+            {%- for block in ingredient_blocks -%}
+              <article class="lz-ing__card" {{ block.shopify_attributes }}>
+                <div class="lz-ing__media">
+                  {%- if block.settings.tag != blank -%}<span class="lz-ing__tag">{{ block.settings.tag | escape }}</span>{%- endif -%}
+                  {%- if block.settings.image != blank -%}
+                    {{ block.settings.image | image_url: width: 700 | image_tag: alt: block.settings.name, loading: 'lazy' }}
+                  {%- endif -%}
+                </div>
+                <div class="lz-ing__body">
+                  <h3>{{ block.settings.name | escape }}</h3>
+                  <p>{{ block.settings.description | escape }}</p>
+                </div>
+              </article>
+            {%- endfor -%}
+          {%- endif -%}
+        </div>
+        {%- if has_modal -%}
+          <button type="button" class="lz-btn-coral lz-btn-coral--inline" aria-haspopup="dialog" aria-controls="LienzoModal-{{ section.id }}" data-lz-modal-open>
+            {{ section.settings.ingredients_button | escape }}
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+          </button>
+        {%- elsif section.settings.ingredients_url != blank -%}
+          <a class="lz-btn-coral lz-btn-coral--inline" href="{{ section.settings.ingredients_url }}">{{ section.settings.ingredients_button | escape }}</a>
+        {%- endif -%}
+      </div>
+    </section>
+  {%- endif -%}
+
+  {%- if show_trust -%}
+    {%- capture trust_items -%}
+      {%- if highlights != blank -%}
+        {%- for highlight in highlights -%}
+          <li class="lz-trust__item"><svg class="lz-trust__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#B5EE8A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"></path></svg>{{ highlight | strip | escape }}</li>
+        {%- endfor -%}
+      {%- else -%}
+        {%- for block in trust_blocks -%}
+          <li class="lz-trust__item" {{ block.shopify_attributes }}><svg class="lz-trust__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#B5EE8A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"></path></svg>{{ block.settings.text | escape }}</li>
+        {%- endfor -%}
+      {%- endif -%}
+    {%- endcapture -%}
+    {%- if trust_items != blank -%}
+      <div class="lz-trust{% if section.settings.trust_respect_motion %} lz-trust--respect{% endif %}" style="--lz-trust-duration: {{ section.settings.trust_speed | default: 40 }}s;">
+        <div class="lz-trust__track">
+          {%- for group in (1..2) -%}
+            <div class="lz-trust__group"{% if group == 2 %} aria-hidden="true"{% endif %}>
+              {%- for repeat in (1..3) -%}
+                <ul class="lz-trust__set{% if repeat > 1 %} lz-trust__set--copy{% endif %}" role="list"{% if repeat > 1 %} aria-hidden="true"{% endif %}>{{ trust_items }}</ul>
+              {%- endfor -%}
+            </div>
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
+  {%- endif -%}
+
+  {%- if cmp_has and show_compare -%}
+    {%- liquid
+      assign cmp_heading = titles_entry.title.value | default: section.settings.compare_heading
+      assign cmp_sub = titles_entry.subtitle.value | default: section.settings.compare_text
+      assign cmp_outro = titles_entry.outro.value | default: section.settings.compare_note
+    -%}
+    <section class="lz-compare">
+      <h2 class="lz-h2 lz-center">{{ cmp_heading | escape }}</h2>
+      {%- if cmp_sub != blank -%}<p class="lz-compare__lead">{{ cmp_sub | escape }}</p>{%- endif -%}
+      <div class="lz-compare__scroll">
+        <table class="lz-compare__table">
+          <thead>
+            <tr>
+              <th scope="col"><span class="visually-hidden">{{ cmp_heading | escape }}</span></th>
+              {%- if competitors != blank -%}
+                {%- for competitor in competitors limit: 3 -%}
+                  <th scope="col"{% if forloop.first %} class="lz-col-us lz-col-us--top"{% endif %}>
+                    {%- if competitor.image.value != blank -%}{{ competitor.image.value | image_url: width: 160 | image_tag: alt: '', class: 'lz-compare__img', loading: 'lazy' }}{%- endif -%}
+                    {{ competitor.name.value | escape }}
+                  </th>
+                {%- endfor -%}
+              {%- else -%}
+                <th scope="col" class="lz-col-us lz-col-us--top">
+                  {%- if product.featured_media -%}{{ product.featured_media | image_url: width: 120 | image_tag: alt: '', class: 'lz-compare__img' }}{%- endif -%}
+                  {{ section.settings.compare_us | escape }}
+                </th>
+                <th scope="col">{{ section.settings.compare_a | escape }}</th>
+                <th scope="col">{{ section.settings.compare_b | escape }}</th>
+              {%- endif -%}
+            </tr>
+          </thead>
+          <tbody>
+            {%- if rows != blank -%}
+              {%- for row in rows -%}
+                {%- capture packed -%}{{ row.our_value.value | strip }}§§{{ row.competitor_1_value.value | strip }}§§{{ row.competitor_2_value.value | strip }}{%- endcapture -%}
+                {%- assign values = packed | split: '§§' -%}
+                <tr>
+                  <th scope="row">{{ row.feature_name.value | escape }}</th>
+                  {%- for index in (0..2) -%}
+                    {%- assign cell = values[index] | strip -%}
+                    {%- assign cell_key = cell | downcase -%}
+                    <td{% if index == 0 %} class="lz-col-us{% if forloop.parentloop.last %} lz-col-us--bottom{% endif %}"{% endif %}>
+                      {%- if cell_key == 'check' or cell_key == 'true' or cell_key == '✓' or cell_key == 'yes' or cell_key == 'si' or cell_key == 'sí' -%}
+                        <span class="lz-icon lz-icon--yes" role="img" aria-label="Sí"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
+                      {%- elsif cell_key == 'cross' or cell_key == 'false' or cell_key == 'x' or cell_key == '✕' or cell_key == 'no' -%}
+                        <span class="lz-icon lz-icon--no" role="img" aria-label="No"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span>
+                      {%- else -%}
+                        {{ cell | escape }}
+                      {%- endif -%}
+                    </td>
+                  {%- endfor -%}
+                </tr>
+              {%- endfor -%}
+            {%- else -%}
+              {%- for block in compare_blocks -%}
+                <tr {{ block.shopify_attributes }}>
+                  <th scope="row">{{ block.settings.feature | escape }}</th>
+                  <td class="lz-col-us{% if forloop.last %} lz-col-us--bottom{% endif %}">{{ block.settings.us | escape }}</td>
+                  <td>{{ block.settings.a | escape }}</td>
+                  <td>{{ block.settings.b | escape }}</td>
+                </tr>
+              {%- endfor -%}
+            {%- endif -%}
+          </tbody>
+        </table>
+      </div>
+      {%- if cmp_outro != blank -%}<p class="lz-compare__note">{{ cmp_outro | escape }}</p>{%- endif -%}
+    </section>
+  {%- endif -%}
+</div>
+
+{% stylesheet %}
+  .lz-btn-coral { gap: 8px; font: inherit; font-weight: 700; cursor: pointer; }
+  .lz-modal { width: min(720px, calc(100% - 32px)); max-height: calc(100dvh - 48px); padding: 0; border: 0; border-radius: 16px; color: #0E3B2E; background: #fff; box-shadow: 0 24px 64px rgb(14 59 46 / 0.25); overflow: hidden; }
+  .lz-modal[open] { display: flex; flex-direction: column; }
+  .lz-modal::backdrop { background: rgb(14 59 46 / 0.55); }
+  .lz-modal__header { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 20px 24px; background: #F2FBF7; border-bottom: 1px solid #D7EEE5; }
+  .lz-modal__title { margin: 0; font-size: 22px; font-weight: 800; color: #0E3B2E; }
+  .lz-modal__close { flex: none; width: 44px; height: 44px; border: 0; border-radius: 50%; background: #fff; color: #0E3B2E; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .lz-modal__body { padding: 24px; overflow-y: auto; }
+  .lz-modal__rte p { margin: 0 0 12px; }
+  .lz-modal__rte h3, .lz-modal__rte h4 { margin: 18px 0 8px; font-weight: 800; }
+  .lz-modal__footer { padding: 16px 24px; border-top: 1px solid #E5ECE8; }
+  .lz-modal__badges { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 12px 24px; }
+  .lz-modal__badge { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 700; }
+  .lz-modal__badge-img { width: 40px; height: 40px; object-fit: contain; }
+
+  .lz-list { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  .lz-list li { display: flex; gap: 12px; align-items: flex-start; }
+  .lz-check { flex: none; margin-top: 3px; color: #1A7F56; }
+  .lz-steps { display: flex; flex-direction: column; gap: 16px; margin-block: 8px 14px; }
+  .lz-steps__item { display: flex; gap: 14px; align-items: flex-start; }
+  .lz-steps__num { flex: none; width: 50px; height: 50px; border-radius: 50%; background: #F2FBF7; border: 1px solid #D7EEE5; color: #1A7F56; font-size: 26px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+  .lz-dose { width: 100%; border-collapse: collapse; font-size: 15px; }
+  .lz-dose th { text-align: left; padding: 0 0 10px; font-weight: 600; color: #55665F; }
+  .lz-dose td { padding: 14px 0; border-top: 1px solid #E5ECE8; }
+  .lz-dose__tip { margin: 14px 0 0; font-size: 14px; color: #55665F; }
+  .lz-btn-coral--small { display: inline-flex; min-height: 40px; padding: 0 18px; }
+  .lz-videos { display: flex; flex-direction: column; gap: 12px; }
+  .lz-videos__heading { margin: 0; font-weight: 800; }
+  .lz-videos__row { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(110px, 1fr); gap: 10px; overflow-x: auto; }
+  .lz-video { display: flex; flex-direction: column; gap: 6px; font-size: 13px; text-align: center; }
+  .lz-video__media { width: 100%; aspect-ratio: 9 / 14; object-fit: cover; border-radius: 8px; background: #CFD8D4; display: block; }
+  .lz-chart__img { width: 100%; height: auto; display: block; border-radius: 12px; }
+  .lz-icon { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; }
+  .lz-icon--yes { background: #0E3B2E; color: #fff; }
+  .lz-icon--no { background: #E5ECE8; color: #55665F; }
+
+  .lz { grid-column: 1 / -1; color: #0E3B2E; font-size: 16px; line-height: 1.55; }
+  .lz a { color: #0E3B2E; }
+  .lz :focus-visible { outline: 3px solid #EA580C; outline-offset: 2px; }
+  .lz-h2 { margin: 0 0 16px; font-weight: 800; font-size: clamp(28px, 3vw, 38px); line-height: 1.2; color: #0E3B2E; }
+  .lz-center { text-align: center; }
+
+  .lz-hero { max-width: 1240px; margin: 0 auto; padding: 36px 24px 64px; }
+  .lz-hero__grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 40px; align-items: start; }
+
+  .lz-gallery { display: flex; flex-direction: column; gap: 14px; }
+  .lz-gallery__main { position: relative; background: #BFE3D6; border-radius: 16px; padding: 24px; display: flex; flex-direction: column; align-items: center; gap: 18px; }
+  .lz-gallery__img { width: 100%; height: auto; border-radius: 12px; display: block; }
+  .lz-gallery__badge { position: absolute; top: 16px; left: 16px; z-index: 1; background: #1A7F56; color: #fff; padding: 4px 12px; border-radius: 999px; font-size: 13px; font-weight: 800; }
+  .lz-gallery__pills { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+  .lz-gallery__pills:empty { display: none; }
+  .lz-pill-dark { background: #0E3B2E; color: #fff; padding: 7px 16px; border-radius: 999px; font-weight: 700; }
+  .lz-gallery__thumbs { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; }
+  .lz-thumb { padding: 0; aspect-ratio: 1 / 1; border-radius: 6px; overflow: hidden; border: 2px solid transparent; background: #DCE3E0; cursor: pointer; }
+  .lz-thumb.is-active { border-color: #0E3B2E; }
+  .lz-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .lz-quote { margin: 4px 0 0; display: flex; gap: 20px; align-items: center; padding: 20px 24px; border-radius: 12px; background: #F2FBF7; border: 1px solid #D7EEE5; }
+  .lz-quote__avatar { flex: none; width: 84px; height: 84px; border-radius: 50%; border: 3px solid #0E5B45; background: #BFE3D6; overflow: hidden; }
+  .lz-quote__avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .lz-quote blockquote { margin: 0; font-size: 17px; font-style: italic; }
+  .lz-quote figcaption { margin-top: 10px; font-size: 14px; }
+
+  .lz-buy { display: flex; flex-direction: column; gap: 20px; }
+  .lz-buy__head { display: flex; flex-direction: column; gap: 10px; }
+  .lz-chips { display: flex; gap: 8px; font-size: 12px; font-weight: 700; }
+  .lz-chip { border: 1px solid #2E9E6E; background: #F2FBF7; padding: 2px 10px; border-radius: 999px; }
+  .lz-title { margin: 0; font-weight: 800; font-size: clamp(30px, 3.2vw, 40px); line-height: 1.15; color: #0E3B2E; }
+  .lz-subtitle { margin: 0; font-size: 18px; }
+  .lz-rating { display: flex; align-items: center; gap: 10px; font-size: 14px; text-decoration: none; }
+  .lz-rating strong { text-decoration: underline; }
+  .lz-stars { background: #00A06B; color: #fff; padding: 0 6px; letter-spacing: 3px; font-size: 13px; }
+  .lz-rule { border: 0; border-top: 1px solid #E5ECE8; margin: 0; }
+
+  .lz-tabs { background: #F3F4F3; border-radius: 12px; padding: 6px; }
+  .lz-tabs__list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .lz-tab { min-height: 48px; border: 0; border-radius: 10px 10px 0 0; background: transparent; color: #55665F; font: inherit; font-size: 15px; font-weight: 800; cursor: pointer; }
+  .lz-tab.is-active { background: #fff; color: #1A7F56; }
+  .lz-tabs__panel { background: #fff; border-radius: 0 0 10px 10px; padding: 18px 22px; }
+  .lz-checks ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  .lz-checks li { position: relative; padding-inline-start: 30px; }
+  .lz-checks li::before { content: ''; position: absolute; left: 2px; top: 6px; width: 12px; height: 7px; border-left: 2.5px solid #1A7F56; border-bottom: 2.5px solid #1A7F56; transform: rotate(-45deg); }
+  .lz-checks p, .lz-dosage p { margin: 0 0 10px; }
+  .lz-dosage table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  .lz-dosage th, .lz-dosage td { text-align: left; padding: 12px 0; border-top: 1px solid #E5ECE8; }
+  .lz-tab-ingredients { display: flex; flex-direction: column; gap: 16px; }
+  .lz-tab-ingredients p { margin: 0; }
+  .lz-mini-ing { display: flex; gap: 14px; align-items: flex-start; }
+  .lz-mini-ing__img { flex: none; width: 52px; height: 52px; border-radius: 50%; background: #BFE3D6; overflow: hidden; }
+  .lz-mini-ing__img img { width: 100%; height: 100%; object-fit: cover; }
+  .lz-btn-coral { display: flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 36px; border: 1px solid #E0715A; background: #FFF4F1; border-radius: 999px; color: #B42318 !important; font-weight: 700; text-decoration: none; }
+  .lz-btn-coral--inline { display: inline-flex; margin: 40px auto 0; }
+
+  .lz-card { background: #F3F4F3; border-radius: 12px; padding: 6px; }
+  .lz-card__inner { background: #fff; border-radius: 10px; padding: 18px 20px; display: flex; flex-direction: column; gap: 18px; }
+  .lz-tip { padding: 12px 14px; background: #F2FBF7; border-radius: 8px; font-size: 15px; }
+  .lz-tip p { margin: 0; }
+  .lz-form { display: flex; flex-direction: column; gap: 18px; }
+  .lz-step { display: flex; flex-direction: column; gap: 10px; }
+  .lz-step__label { display: flex; align-items: center; gap: 10px; margin: 0; font-weight: 800; }
+  .lz-step__num { width: 24px; height: 24px; border-radius: 50%; background: #1A7F56; color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; }
+  .lz-variants { display: flex; flex-direction: column; gap: 10px; }
+  .lz-variant { position: relative; display: flex; align-items: center; gap: 12px; padding: 12px 16px; min-height: 60px; border-radius: 8px; border: 1px solid #D5DED9; background: #fff; cursor: pointer; }
+  .lz-variant input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
+  .lz-variant__radio { flex: none; width: 18px; height: 18px; border-radius: 50%; border: 2px solid #A9B5AF; box-sizing: border-box; }
+  .lz-variant__text { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+  .lz-variant__title { font-weight: 800; }
+  .lz-variant__save { align-self: flex-start; background: #B5EE8A; font-size: 12px; font-weight: 800; padding: 2px 8px; border-radius: 999px; }
+  .lz-variant__price { font-weight: 800; }
+  .lz-variant:has(input:checked) { border: 2px solid #1E6B4F; background: #E8F5EF; }
+  .lz-variant:has(input:checked) .lz-variant__radio { border: 6px solid #1A7F56; }
+  .lz-variant:has(input:focus-visible) { outline: 3px solid #EA580C; outline-offset: 2px; }
+  .lz-variant:has(input:disabled) { opacity: 0.5; }
+  .lz-cta { height: 56px; border: 0; border-radius: 999px; background: #1A7F56; color: #fff; font: inherit; font-size: 18px; font-weight: 800; cursor: pointer; }
+  .lz-cta:hover { background: #156A48; }
+  .lz-cta:disabled { background: #8FBBA8; cursor: not-allowed; }
+  .lz-assure { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; font-size: 13px; color: #55665F; }
+
+  .lz-acc { border-top: 1px solid #E5ECE8; }
+  .lz-acc__item { border-bottom: 1px solid #E5ECE8; }
+  .lz-acc__q { list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 16px; min-height: 60px; padding: 16px 0; font-size: 17px; font-weight: 800; cursor: pointer; }
+  .lz-acc__q::-webkit-details-marker { display: none; }
+  .lz-acc__sign::before { content: '+'; font-weight: 400; font-size: 20px; }
+  .lz-acc__item[open] .lz-acc__sign::before { content: '−'; }
+  .lz-acc__a { padding: 0 0 20px; }
+  .lz-acc__a p { margin: 0 0 12px; }
+
+  .lz-chart { background: #F6F6F6; }
+  .lz-chart__inner { max-width: 1040px; margin: 0 auto; padding: 88px 24px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 40px; align-items: center; }
+  .lz-chart__text p { margin: 0 0 16px; }
+  .lz-chart__fig { margin: 0; }
+  .lz-chart__fig text { font-family: var(--font-body--family); }
+  .lz-chart__fig figcaption { font-size: 12px; color: #5F6B66; text-align: center; }
+
+  .lz-ing { background: #F2FBF7; }
+  .lz-ing__inner { max-width: 1040px; margin: 0 auto; padding: 80px 24px; display: flex; flex-direction: column; align-items: center; }
+  .lz-ing__grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 28px; width: 100%; margin-top: 24px; }
+  .lz-ing__card { background: #fff; border: 1px solid #BFE3D6; border-radius: 12px; overflow: hidden; }
+  .lz-ing__media { position: relative; aspect-ratio: 3 / 2; background: #BFE3D6; }
+  .lz-ing__media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .lz-ing__tag { position: absolute; top: 14px; left: 14px; background: #fff; padding: 2px 10px; border-radius: 999px; font-size: 13px; font-weight: 800; }
+  .lz-ing__body { padding: 18px 16px 24px; }
+  .lz-ing__body h3 { margin: 0 0 8px; font-size: 18px; font-weight: 800; }
+  .lz-ing__body p { margin: 0; font-size: 15px; }
+
+  .lz-trust { background: #0E3B2E; color: #fff; padding: 16px 0; overflow: hidden; font-weight: 700; font-size: 15px; }
+  .lz-trust__track { display: flex; width: max-content; animation: lz-trust-scroll var(--lz-trust-duration, 40s) linear infinite; }
+  .lz-trust:hover .lz-trust__track { animation-play-state: paused; }
+  .lz-trust__group { display: flex; flex: none; }
+  .lz-trust__set { display: flex; flex: none; margin: 0; padding: 0; list-style: none; }
+  .lz-trust__item { display: flex; align-items: center; gap: 8px; flex: none; padding-inline: 20px; white-space: nowrap; }
+  @keyframes lz-trust-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  @media (prefers-reduced-motion: reduce) {
+    .lz-trust--respect .lz-trust__track { animation: none; width: auto; flex-wrap: wrap; justify-content: center; }
+    .lz-trust--respect .lz-trust__group[aria-hidden='true'] { display: none; }
+    .lz-trust--respect .lz-trust__set--copy { display: none; }
+    .lz-trust--respect .lz-trust__set { flex-wrap: wrap; justify-content: center; }
+  }
+
+  .lz-compare { max-width: 760px; margin: 0 auto; padding: 88px 24px; }
+  .lz-compare__lead { margin: 0 auto 40px; text-align: center; color: #55665F; max-width: 520px; }
+  .lz-compare__scroll { overflow-x: auto; }
+  .lz-compare__table { width: 100%; min-width: 600px; border-collapse: separate; border-spacing: 0; font-size: 14px; text-align: center; }
+  .lz-compare__table thead th { padding: 20px 12px 12px; font-weight: 800; vertical-align: bottom; }
+  .lz-compare__table tbody th { text-align: left; padding: 18px 12px; border-bottom: 1px solid #E5ECE8; font-weight: 800; }
+  .lz-compare__table tbody td { border-bottom: 1px solid #E5ECE8; padding: 12px; }
+  .lz-compare__table td.lz-col-us, .lz-compare__table th.lz-col-us { background: #BFE3D6; border-bottom-color: #BFE3D6; }
+  .lz-col-us--top { border-radius: 16px 16px 0 0; }
+  .lz-col-us--bottom { border-radius: 0 0 16px 16px; font-weight: 800; }
+  .lz-compare__img { display: block; width: 56px; height: 56px; object-fit: contain; margin: 0 auto 8px; border-radius: 10px; background: #fff; }
+  .lz-compare__note { margin: 28px 0 0; text-align: center; font-size: 13px; color: #5F6B66; }
+
+  @media screen and (min-width: 900px) {
+    .lz-hero__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 52px; }
+    .lz-gallery { position: sticky; top: 24px; }
+    .lz-chart__inner { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 56px; }
+    .lz-ing__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+
+  @media screen and (max-width: 599px) {
+    .lz-gallery__thumbs { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  document.querySelectorAll('.lz').forEach((root) => {
+    const tabs = root.querySelectorAll('[data-lz-tab]');
+    const panels = root.querySelectorAll('[data-lz-panel]');
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        tabs.forEach((t) => {
+          const on = t === tab;
+          t.classList.toggle('is-active', on);
+          t.setAttribute('aria-selected', on ? 'true' : 'false');
+        });
+        panels.forEach((p) => { p.hidden = p.dataset.lzPanel !== tab.dataset.lzTab; });
+      });
+    });
+
+    const main = root.querySelector('[data-lz-main]');
+    root.querySelectorAll('[data-lz-thumb]').forEach((thumb) => {
+      thumb.addEventListener('click', () => {
+        if (main) { main.src = thumb.dataset.lzThumb; main.removeAttribute('srcset'); }
+        root.querySelectorAll('[data-lz-thumb]').forEach((t) => t.classList.toggle('is-active', t === thumb));
+      });
+    });
+
+    const modal = root.querySelector('[data-lz-modal]');
+    const openers = root.querySelectorAll('[data-lz-modal-open]');
+    if (modal && openers.length) {
+      let lastOpener = null;
+      openers.forEach((opener) => {
+        opener.addEventListener('click', () => { lastOpener = opener; modal.showModal(); });
+      });
+      modal.querySelector('[data-lz-modal-close]')?.addEventListener('click', () => modal.close());
+      modal.addEventListener('click', (event) => { if (event.target === modal) modal.close(); });
+      modal.addEventListener('close', () => { if (lastOpener) lastOpener.focus(); });
+    }
+
+    const priceTarget = root.querySelector('[data-lz-cta-price]');
+    root.querySelectorAll('.lz-variant input').forEach((input) => {
+      input.addEventListener('change', () => {
+        if (priceTarget && input.dataset.lzPrice) priceTarget.textContent = input.dataset.lzPrice;
+      });
+    });
+  });
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "PDP Lienzo",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    { "type": "select", "id": "part", "label": "Parte de la página", "options": [
+      { "value": "all", "label": "Todo junto" },
+      { "value": "hero", "label": "Producto (galería y compra)" },
+      { "value": "chart", "label": "Gráfica" },
+      { "value": "ingredients", "label": "Ingredientes" },
+      { "value": "trust", "label": "Banda de confianza" },
+      { "value": "compare", "label": "Comparativa" }
+    ], "default": "all" },
+    { "type": "header", "content": "Galería" },
+    { "type": "text", "id": "badge", "label": "Insignia", "default": "Más vendido" },
+    { "type": "text", "id": "pill_1", "label": "Píldora 1", "default": "Contra el mal aliento" },
+    { "type": "text", "id": "pill_2", "label": "Píldora 2", "default": "Encías sanas" },
+    { "type": "text", "id": "pill_3", "label": "Píldora 3", "default": "Reduce placa y sarro" },
+    { "type": "header", "content": "Testimonio" },
+    { "type": "image_picker", "id": "quote_image", "label": "Foto" },
+    { "type": "textarea", "id": "quote", "label": "Cita", "default": "Dental Bright hace que el cuidado bucal sea fácil y accesible para todos los dueños de mascotas, todos los días." },
+    { "type": "text", "id": "quote_name", "label": "Nombre", "default": "Guy Colson" },
+    { "type": "text", "id": "quote_role", "label": "Cargo", "default": "Propietario veterinario" },
+    { "type": "header", "content": "Encabezado" },
+    { "type": "text", "id": "chip_1", "label": "Etiqueta 1", "default": "100% natural" },
+    { "type": "text", "id": "chip_2", "label": "Etiqueta 2", "default": "60 cucharadas" },
+    { "type": "text", "id": "headline", "label": "Título (vacío = nombre del producto)", "default": "Cuidado bucal diario completo en 10 segundos." },
+    { "type": "text", "id": "subtitle", "label": "Subtítulo", "default": "Una rutina diaria para una boca sana, sin cepillarle los dientes." },
+    { "type": "text", "id": "review_intro", "label": "Reseñas: texto inicial", "default": "Mira nuestras" },
+    { "type": "text", "id": "review_count", "label": "Reseñas: número", "default": "18.618" },
+    { "type": "text", "id": "review_outro", "label": "Reseñas: texto final", "default": "reseñas" },
+    { "type": "url", "id": "review_url", "label": "Reseñas: enlace" },
+    { "type": "header", "content": "Pestañas" },
+    { "type": "text", "id": "tab_1_label", "label": "Pestaña 1", "default": "Ventajas" },
+    { "type": "richtext", "id": "tab_1_content", "label": "Contenido pestaña 1", "default": "<ul><li>Para el mal aliento y las manchas amarillas</li><li>Para encías que requieren atención</li><li>Afloja la placa antes de que se endurezca</li><li>Rutina sencilla, recomendada por veterinarios</li></ul>" },
+    { "type": "text", "id": "tab_2_label", "label": "Pestaña 2", "default": "Ingredientes" },
+    { "type": "text", "id": "tab_3_label", "label": "Pestaña 3", "default": "Dosificación" },
+    { "type": "richtext", "id": "tab_3_content", "label": "Contenido pestaña 3", "default": "<p><strong>Hasta 5 kg:</strong> ½ cucharada</p><p><strong>5–10 kg:</strong> 1 cucharada</p><p><strong>10–20 kg:</strong> 2 cucharadas</p><p>Espolvoréalo sobre la comida a diario. También puedes mezclarlo con comida húmeda o una golosina.</p>" },
+    { "type": "text", "id": "dose_col_1", "label": "Dosis: columna 1", "default": "Peso" },
+    { "type": "text", "id": "dose_col_2", "label": "Dosis: columna 2", "default": "Dosis diaria" },
+    { "type": "text", "id": "scoop_label", "label": "Dosis: unidad", "default": "cucharadas" },
+    { "type": "text", "id": "videos_heading", "label": "Título de vídeos", "default": "Mira nuestros vídeos" },
+    { "type": "header", "content": "Compra" },
+    { "type": "richtext", "id": "tip", "label": "Aviso", "default": "<p>Dale el producto <strong>todos los días durante al menos 60 días</strong>. Así tiene tiempo de actuar desde dentro hacia fuera.</p>" },
+    { "type": "text", "id": "step_1_label", "label": "Paso 1 (si hay variantes)", "default": "Elige tu opción" },
+    { "type": "text", "id": "save_label", "label": "Texto de ahorro", "default": "Ahorra" },
+    { "type": "text", "id": "cta_label", "label": "Botón", "default": "Añadir al carrito" },
+    { "type": "text", "id": "assure_1", "label": "Garantía 1", "default": "Envío en 24–48 h" },
+    { "type": "text", "id": "assure_2", "label": "Garantía 2", "default": "Garantía de 60 días" },
+    { "type": "text", "id": "assure_3", "label": "Garantía 3", "default": "Pago seguro" },
+    { "type": "range", "id": "trust_speed", "label": "Banda: duración del ciclo (segundos)", "min": 10, "max": 120, "step": 5, "default": 40 },
+    { "type": "checkbox", "id": "trust_respect_motion", "label": "Banda: detener la animación si el visitante prefiere menos movimiento", "default": true },
+    { "type": "header", "content": "Gráfica" },
+    { "type": "text", "id": "chart_heading", "label": "Título", "default": "Unos dientes blancos no garantizan una boca sana" },
+    { "type": "richtext", "id": "chart_text", "label": "Texto", "default": "<p>Más del 80% de los perros mayores de 3 años tendrán problemas de encías, a menudo debajo de la encía, donde no se ven.</p><p>La placa se acumula a diario en todos los perros, incluso bien cuidados. Una vez convertida en sarro, es difícil de eliminar.</p><p>Lo que necesitas es algo que cuide toda la boca todos los días, sin complicaciones.</p>" },
+    { "type": "text", "id": "chart_stat", "label": "Dato", "default": "80% · más de 3 años" },
+    { "type": "text", "id": "chart_axis", "label": "Eje", "default": "Edad del perro (años)" },
+    { "type": "text", "id": "chart_sources", "label": "Fuentes", "default": "Universidad de Cornell · Manual Veterinario de Merck · DeBowes et al. (1996)" },
+    { "type": "header", "content": "Ingredientes" },
+    { "type": "text", "id": "ingredients_heading", "label": "Título", "default": "¿Qué contiene Dental Bright?" },
+    { "type": "text", "id": "ingredients_button", "label": "Botón", "default": "Ver todos los ingredientes" },
+    { "type": "text", "id": "modal_title", "label": "Título del modal", "default": "Todos los ingredientes" },
+    { "type": "text", "id": "modal_close_label", "label": "Texto accesible de cerrar", "default": "Cerrar" },
+    { "type": "url", "id": "ingredients_url", "label": "Enlace del botón" },
+    { "type": "header", "content": "Comparación" },
+    { "type": "text", "id": "compare_heading", "label": "Título", "default": "Donde terminan otros cuidados dentales" },
+    { "type": "text", "id": "compare_text", "label": "Texto", "default": "Una comparación honesta sobre aliento fresco, prevención de la placa, encías sanas y flora oral saludable." },
+    { "type": "text", "id": "compare_us", "label": "Columna 1", "default": "Dental Bright" },
+    { "type": "text", "id": "compare_a", "label": "Columna 2", "default": "Otros polvos de algas" },
+    { "type": "text", "id": "compare_b", "label": "Columna 3", "default": "Palitos dentales" },
+    { "type": "text", "id": "compare_note", "label": "Nota", "default": "Cepillar los dientes sigue siendo lo ideal. Pero pocos perros lo aceptan a diario." }
+  ],
+  "blocks": [
+    {
+      "type": "faq",
+      "name": "Pregunta",
+      "settings": [
+        { "type": "text", "id": "question", "label": "Pregunta", "default": "¿Cómo funciona?" },
+        { "type": "richtext", "id": "answer", "label": "Respuesta", "default": "<p>Respuesta.</p>" }
+      ]
+    },
+    {
+      "type": "ingredient",
+      "name": "Ingrediente",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Imagen" },
+        { "type": "text", "id": "tag", "label": "Etiqueta" },
+        { "type": "text", "id": "name", "label": "Nombre", "default": "Ingrediente" },
+        { "type": "text", "id": "short", "label": "Texto corto (pestaña)" },
+        { "type": "textarea", "id": "description", "label": "Descripción" }
+      ]
+    },
+    {
+      "type": "trust",
+      "name": "Sello de confianza",
+      "settings": [{ "type": "text", "id": "text", "label": "Texto", "default": "100% natural" }]
+    },
+    {
+      "type": "compare_row",
+      "name": "Fila de comparación",
+      "settings": [
+        { "type": "text", "id": "feature", "label": "Característica", "default": "Aliento más fresco" },
+        { "type": "text", "id": "us", "label": "Columna 1", "default": "Menta y eucalipto" },
+        { "type": "text", "id": "a", "label": "Columna 2", "default": "No es el objetivo" },
+        { "type": "text", "id": "b", "label": "Columna 3", "default": "Temporal" }
+      ]
+    }
+  ],
+  "presets": [{ "name": "PDP Lienzo" }]
+}
+{% endschema %}

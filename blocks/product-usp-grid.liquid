@@ -1,0 +1,162 @@
+{%- liquid
+  assign usp_count = 0
+  for i in (1..6)
+    assign text_key = 'usp_' | append: i | append: '_text'
+    if block.settings[text_key] != blank
+      assign usp_count = usp_count | plus: 1
+    endif
+  endfor
+-%}
+
+{%- if usp_count > 0 -%}
+  <ul class="pdp-usp-grid" {{ block.shopify_attributes }}>
+    {%- for i in (1..6) -%}
+      {%- liquid
+        assign text_key = 'usp_' | append: i | append: '_text'
+        assign icon_key = 'usp_' | append: i | append: '_icon'
+        assign usp_text = block.settings[text_key]
+        assign usp_icon = block.settings[icon_key]
+      -%}
+      {%- if usp_text != blank -%}
+        <li class="pdp-usp-grid__item">
+          <span class="pdp-usp-grid__icon" aria-hidden="true">
+            {%- case usp_icon -%}
+              {%- when 'box' -%}
+                {{- 'icon-inventory.svg' | inline_asset_content -}}
+              {%- when 'truck' -%}
+                {{- 'icon-orders.svg' | inline_asset_content -}}
+              {%- when 'tag' -%}
+                {{- 'icon-discount.svg' | inline_asset_content -}}
+              {%- when 'info' -%}
+                {{- 'icon-info.svg' | inline_asset_content -}}
+              {%- else -%}
+                {{- 'icon-checkmark.svg' | inline_asset_content -}}
+            {%- endcase -%}
+          </span>
+          <span class="pdp-usp-grid__text">{{ usp_text | escape }}</span>
+        </li>
+      {%- endif -%}
+    {%- endfor -%}
+  </ul>
+{%- elsif request.design_mode -%}
+  <p class="pdp-usp-grid pdp-usp-grid--empty" {{ block.shopify_attributes }}>
+    Añade textos en este bloque para mostrar las ventajas junto al botón de compra.
+  </p>
+{%- endif -%}
+
+{% stylesheet %}
+  .pdp-usp-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px 16px;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .pdp-usp-grid__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 12px;
+    line-height: 1.4;
+    color: #444;
+  }
+
+  .pdp-usp-grid__icon {
+    display: inline-flex;
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    color: #1E8A5E;
+  }
+
+  .pdp-usp-grid__icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .pdp-usp-grid--empty {
+    font-size: 12px;
+    color: #6e6e6e;
+  }
+
+  @media screen and (min-width: 480px) {
+    .pdp-usp-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Ventajas de compra",
+  "tag": null,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Cuadrícula de ventajas breves que se muestra bajo el botón de compra. Deja un texto vacío para ocultar esa ventaja."
+    },
+    { "type": "header", "content": "Ventaja 1" },
+    { "type": "text", "id": "usp_1_text", "label": "Texto", "default": "100% natural, sin gluten ni cereales" },
+    { "type": "select", "id": "usp_1_icon", "label": "Icono", "default": "check", "options": [
+      { "value": "check", "label": "Check" },
+      { "value": "box", "label": "Caja" },
+      { "value": "truck", "label": "Envío" },
+      { "value": "tag", "label": "Etiqueta" },
+      { "value": "info", "label": "Información" }
+    ] },
+    { "type": "header", "content": "Ventaja 2" },
+    { "type": "text", "id": "usp_2_text", "label": "Texto", "default": "Envío gratis en pedidos desde 49 €" },
+    { "type": "select", "id": "usp_2_icon", "label": "Icono", "default": "truck", "options": [
+      { "value": "check", "label": "Check" },
+      { "value": "box", "label": "Caja" },
+      { "value": "truck", "label": "Envío" },
+      { "value": "tag", "label": "Etiqueta" },
+      { "value": "info", "label": "Información" }
+    ] },
+    { "type": "header", "content": "Ventaja 3" },
+    { "type": "text", "id": "usp_3_text", "label": "Texto", "default": "Pedidos antes de las 22:00 salen el mismo día" },
+    { "type": "select", "id": "usp_3_icon", "label": "Icono", "default": "box", "options": [
+      { "value": "check", "label": "Check" },
+      { "value": "box", "label": "Caja" },
+      { "value": "truck", "label": "Envío" },
+      { "value": "tag", "label": "Etiqueta" },
+      { "value": "info", "label": "Información" }
+    ] },
+    { "type": "header", "content": "Ventaja 4" },
+    { "type": "text", "id": "usp_4_text", "label": "Texto", "default": "60 días de garantía de devolución" },
+    { "type": "select", "id": "usp_4_icon", "label": "Icono", "default": "check", "options": [
+      { "value": "check", "label": "Check" },
+      { "value": "box", "label": "Caja" },
+      { "value": "truck", "label": "Envío" },
+      { "value": "tag", "label": "Etiqueta" },
+      { "value": "info", "label": "Información" }
+    ] },
+    { "type": "header", "content": "Ventaja 5" },
+    { "type": "text", "id": "usp_5_text", "label": "Texto" },
+    { "type": "select", "id": "usp_5_icon", "label": "Icono", "default": "check", "options": [
+      { "value": "check", "label": "Check" },
+      { "value": "box", "label": "Caja" },
+      { "value": "truck", "label": "Envío" },
+      { "value": "tag", "label": "Etiqueta" },
+      { "value": "info", "label": "Información" }
+    ] },
+    { "type": "header", "content": "Ventaja 6" },
+    { "type": "text", "id": "usp_6_text", "label": "Texto" },
+    { "type": "select", "id": "usp_6_icon", "label": "Icono", "default": "check", "options": [
+      { "value": "check", "label": "Check" },
+      { "value": "box", "label": "Caja" },
+      { "value": "truck", "label": "Envío" },
+      { "value": "tag", "label": "Etiqueta" },
+      { "value": "info", "label": "Información" }
+    ] }
+  ],
+  "presets": [
+    {
+      "name": "Ventajas de compra"
+    }
+  ]
+}
+{% endschema %}

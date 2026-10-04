@@ -1,0 +1,359 @@
+{% doc %}
+  Horizontal carousel of product videos, read from the product's
+  `custom.product_videos` metafield (list of `product_video` metaobjects).
+  Clicking a card opens the video in a dialog.
+
+  @param {object} product - The product whose videos are rendered.
+  @param {string} [uid] - Unique suffix for element ids.
+{% enddoc %}
+
+{%- assign videos = product.metafields.custom.product_videos.value -%}
+
+{%- if videos != blank and videos.size > 0 -%}
+  <section class="video-gallery" data-video-gallery aria-labelledby="video-gallery-heading-{{ uid }}">
+    <h3 class="video-gallery__heading" id="video-gallery-heading-{{ uid }}">Mira nuestros vídeos <span class="video-gallery__arrow" aria-hidden="true">&darr;</span></h3>
+
+    <ul class="video-gallery__list" role="list">
+      {%- for video_item in videos -%}
+        {%- liquid
+          assign video_file = video_item.video.value
+          assign cover = video_item.cover_image.value
+          assign video_title = video_item.title.value
+          assign is_video = false
+          if video_file.media_type == 'video' or video_file.media_type == 'external_video'
+            assign is_video = true
+          endif
+          assign dialog_id = 'video-gallery-dialog-' | append: uid | append: '-' | append: forloop.index
+        -%}
+
+        {%- if video_file != blank or cover != blank -%}
+          <li class="video-gallery__item">
+            <button
+              type="button"
+              class="video-gallery__card"
+              aria-haspopup="dialog"
+              aria-controls="{{ dialog_id }}"
+              data-video-open
+              {% if video_title != blank %}
+                aria-label="Reproducir vídeo: {{ video_title | escape }}"
+              {% else %}
+                aria-label="Reproducir vídeo"
+              {% endif %}
+            >
+              <span class="video-gallery__media">
+                {%- if cover != blank -%}
+                  {{
+                    cover
+                    | image_url: width: 400
+                    | image_tag:
+                      class: 'video-gallery__cover',
+                      widths: '140, 280, 400',
+                      sizes: '140px',
+                      loading: 'lazy',
+                      alt: video_title
+                  }}
+                {%- elsif video_file != blank and is_video == false -%}
+                  {{
+                    video_file
+                    | image_url: width: 400
+                    | image_tag:
+                      class: 'video-gallery__cover',
+                      widths: '140, 280, 400',
+                      sizes: '140px',
+                      loading: 'lazy',
+                      alt: video_title
+                  }}
+                {%- elsif is_video -%}
+                  {{
+                    video_file
+                    | video_tag:
+                      class: 'video-gallery__cover',
+                      controls: false,
+                      muted: true,
+                      playsinline: true,
+                      preload: 'metadata',
+                      image_size: '400x'
+                  }}
+                {%- endif -%}
+
+                <svg class="video-gallery__play" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+                  <circle cx="24" cy="24" r="24" fill="rgba(150, 115, 105, 0.75)" />
+                  <path d="M19 15.5v17l14-8.5-14-8.5Z" fill="#ffffff" />
+                </svg>
+              </span>
+
+              {%- if video_title != blank -%}
+                <span class="video-gallery__title">{{ video_title | escape }}</span>
+              {%- endif -%}
+            </button>
+
+            {%- if is_video -%}
+              <dialog
+                class="video-gallery__dialog"
+                id="{{ dialog_id }}"
+                {% if video_title != blank %}
+                  aria-label="{{ video_title | escape }}"
+                {% else %}
+                  aria-label="Vídeo del producto"
+                {% endif %}
+                data-video-dialog
+              >
+                <button type="button" class="video-gallery__close" aria-label="Cerrar" data-video-close>
+                  <svg viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+                    <path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" fill="none" />
+                  </svg>
+                </button>
+                {{
+                  video_file
+                  | video_tag:
+                    class: 'video-gallery__player',
+                    controls: true,
+                    playsinline: true,
+                    preload: 'none',
+                    image_size: '800x'
+                }}
+              </dialog>
+            {%- endif -%}
+          </li>
+        {%- endif -%}
+      {%- endfor -%}
+    </ul>
+  </section>
+{%- elsif request.design_mode -%}
+  <p class="video-gallery video-gallery--empty">
+    Este bloque se muestra cuando el producto tiene vídeos en <code>custom.product_videos</code>.
+  </p>
+{%- endif -%}
+
+{% stylesheet %}
+  .video-gallery {
+    --video-gallery-color: #0E3B2E;
+    color: var(--video-gallery-color);
+  }
+
+  .video-gallery {
+    font-family: var(--font-body--family);
+  }
+
+  .video-gallery .video-gallery__heading {
+    margin: 0 0 20px;
+    color: #0E3B2E;
+    font-family: var(--font-body--family);
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+
+  .video-gallery__arrow {
+    font-size: 0.9em;
+    font-weight: 500;
+    margin-left: 10px;
+  }
+
+  .video-gallery__list {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .video-gallery__item {
+    min-width: 0;
+  }
+
+  /* Mobile: five columns would be too narrow, so the row scrolls horizontally. */
+  @media screen and (max-width: 749px) {
+    .video-gallery__list {
+      grid-template-columns: none;
+      grid-auto-flow: column;
+      grid-auto-columns: 112px;
+      padding-block-end: 4px;
+      overflow-x: auto;
+      scroll-snap-type: x proximity;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .video-gallery__list::-webkit-scrollbar {
+      display: none;
+    }
+
+    .video-gallery__item {
+      scroll-snap-align: start;
+    }
+  }
+
+  .video-gallery__card {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    width: 100%;
+    padding: 0;
+    appearance: none;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: center;
+    cursor: pointer;
+  }
+
+  .video-gallery__card:focus-visible {
+    outline: 2px solid var(--video-gallery-color);
+    outline-offset: 3px;
+    border-radius: 12px;
+  }
+
+  .video-gallery__media {
+    position: relative;
+    display: block;
+    width: 100%;
+    aspect-ratio: 9 / 16;
+    overflow: hidden;
+    border-radius: 12px;
+    background: #e8f5e9;
+  }
+
+  .video-gallery__cover {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .video-gallery__play {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: 50%;
+    width: 44px;
+    height: 44px;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    transition: transform 0.2s ease;
+  }
+
+  .video-gallery__card:hover .video-gallery__play {
+    transform: translate(-50%, -50%) scale(1.08);
+  }
+
+  .video-gallery .video-gallery__title {
+    margin-block-start: 10px;
+    color: #397a5e;
+    font-family: var(--font-body--family);
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.2;
+    text-align: center;
+    text-wrap: balance;
+  }
+
+  .video-gallery__dialog {
+    position: fixed;
+    width: min(92vw, 420px);
+    max-height: 90dvh;
+    margin: auto;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+    border-radius: 16px;
+    background: #000000;
+  }
+
+  .video-gallery__dialog::backdrop {
+    background: rgba(12, 32, 25, 0.7);
+  }
+
+  .video-gallery__player {
+    display: block;
+    width: 100%;
+    max-height: 90dvh;
+  }
+
+  .video-gallery__close {
+    position: absolute;
+    inset-block-start: 10px;
+    inset-inline-end: 10px;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    appearance: none;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--video-gallery-color, #0E3B2E);
+    cursor: pointer;
+  }
+
+  .video-gallery__close svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .video-gallery--empty {
+    margin: 0;
+    padding: 12px 14px;
+    border: 1px dashed #E5ECE8;
+    border-radius: 12px;
+    background: #f7f9f8;
+    color: #55665F;
+    font-size: 13px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .video-gallery__play {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  (function () {
+    function initGallery(root) {
+      if (root.dataset.videoReady === 'true') return;
+      root.dataset.videoReady = 'true';
+
+      root.querySelectorAll('[data-video-open]').forEach((opener) => {
+        const dialog = document.getElementById(opener.getAttribute('aria-controls'));
+        if (!dialog || typeof dialog.showModal !== 'function') return;
+
+        const player = dialog.querySelector('video');
+
+        opener.addEventListener('click', () => {
+          dialog.showModal();
+          if (player) player.play().catch(() => {});
+        });
+
+        dialog.querySelector('[data-video-close]').addEventListener('click', () => dialog.close());
+
+        dialog.addEventListener('click', (event) => {
+          if (event.target === dialog) dialog.close();
+        });
+
+        dialog.addEventListener('close', () => {
+          if (player) player.pause();
+          opener.focus();
+        });
+      });
+    }
+
+    function initAll(scope) {
+      const container = scope && scope.querySelectorAll ? scope : document;
+      container.querySelectorAll('[data-video-gallery]').forEach(initGallery);
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => initAll());
+    } else {
+      initAll();
+    }
+
+    document.addEventListener('shopify:section:load', (event) => initAll(event.target));
+    document.addEventListener('shopify:block:select', (event) => initAll(event.target));
+  })();
+{% endjavascript %}

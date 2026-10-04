@@ -1,0 +1,51 @@
+{%- liquid
+  assign target_product = closest.product
+  assign show = true
+  if block.settings.hide_without_variants and target_product.has_only_default_variant
+    assign show = false
+  endif
+-%}
+
+{%- if show and block.settings.label != blank -%}
+  <p class="pdp-step-label" {{ block.shopify_attributes }}>
+    <span class="pdp-step-label__number">{{ block.settings.number }}</span>
+    <span>{{ block.settings.label | escape }}</span>
+  </p>
+{%- endif -%}
+
+{% stylesheet %}
+  .pdp-step-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    color: #0E3B2E;
+    font-weight: 800;
+    font-size: 16px;
+  }
+
+  .pdp-step-label__number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #1A7F56;
+    color: #FFFFFF;
+    font-size: 13px;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Paso de compra",
+  "tag": null,
+  "settings": [
+    { "type": "range", "id": "number", "label": "Número", "min": 1, "max": 5, "step": 1, "default": 1 },
+    { "type": "text", "id": "label", "label": "Texto", "default": "Peso de tu perro" },
+    { "type": "checkbox", "id": "hide_without_variants", "label": "Ocultar si el producto no tiene variantes", "default": true }
+  ],
+  "presets": [{ "name": "Paso de compra", "category": "t:categories.product" }]
+}
+{% endschema %}

@@ -1,0 +1,171 @@
+{%- liquid
+  assign rating = block.settings.rating
+  assign review_count = block.settings.review_count
+  assign review_url = block.settings.review_url
+  assign platform_label = block.settings.platform_label
+
+  assign rating_percent = rating | times: 20
+  if rating_percent > 100
+    assign rating_percent = 100
+  endif
+-%}
+
+{%- capture stars -%}
+  <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" focusable="false">
+    <path
+      d="M10 1.2l2.47 5.26 5.65.68-4.2 3.98 1.14 5.68L10 13.9l-5.06 2.9 1.14-5.68-4.2-3.98 5.65-.68L10 1.2Z"
+    />
+  </svg>
+{%- endcapture -%}
+
+{%- if review_count != blank -%}
+  <div
+    class="pdp-reviews"
+    style="--pdp-reviews-fill: {{ rating_percent }}%; --pdp-reviews-color: {{ block.settings.rating_color }};"
+    {{ block.shopify_attributes }}
+  >
+    <span class="pdp-reviews__stars" role="img" aria-label="{{ rating }} / 5">
+      <span class="pdp-reviews__stars-track">{{ stars }}{{ stars }}{{ stars }}{{ stars }}{{ stars }}</span>
+      <span class="pdp-reviews__stars-fill">{{ stars }}{{ stars }}{{ stars }}{{ stars }}{{ stars }}</span>
+    </span>
+    <span>
+      {{ block.settings.intro_label | escape }}
+      {% if review_url != blank %}
+        <a class="pdp-reviews__link" href="{{ review_url }}">{{ review_count | escape }}</a>
+      {% else %}
+        <strong class="pdp-reviews__link">{{ review_count | escape }}</strong>
+      {% endif %}
+      {{ block.settings.outro_label | escape }}
+      {% if platform_label != blank %}
+        <span class="pdp-reviews__platform">{{ platform_label | escape }}</span>
+      {% endif %}
+    </span>
+  </div>
+{%- elsif request.visual_preview_mode -%}
+  <p class="pdp-reviews pdp-reviews--empty" {{ block.shopify_attributes }}>Añade el número de reseñas para mostrar este bloque.</p>
+{%- endif -%}
+
+{% stylesheet %}
+  .pdp-reviews {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    color: #0E3B2E;
+    font-size: 14px;
+    line-height: 1.4;
+  }
+
+  .pdp-reviews--empty {
+    margin: 0;
+    padding: 10px 12px;
+    border: 1px dashed #E5ECE8;
+    border-radius: 12px;
+    background: #f7f9f8;
+    color: #55665F;
+    font-size: 13px;
+  }
+
+  .pdp-reviews__stars {
+    position: relative;
+    display: inline-flex;
+    flex: 0 0 auto;
+    color: #d8dfdc;
+  }
+
+  .pdp-reviews__stars-track,
+  .pdp-reviews__stars-fill {
+    display: flex;
+    gap: 2px;
+  }
+
+  .pdp-reviews__stars-track svg,
+  .pdp-reviews__stars-fill svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  .pdp-reviews__stars-fill {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    overflow: hidden;
+    width: var(--pdp-reviews-fill, 100%);
+    color: var(--pdp-reviews-color, #0E3B2E);
+  }
+
+  .pdp-reviews__link {
+    color: inherit;
+    font-weight: 600;
+    text-underline-offset: 2px;
+  }
+
+  .pdp-reviews__platform {
+    color: #1E8A5E;
+    font-weight: 700;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Reseñas de producto",
+  "tag": null,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Muestra una calificación de estrellas y un enlace a tus reseñas externas (Trustpilot, Google, etc.). No se conecta a ninguna app: introduce los datos manualmente o sustitúyelo por el bloque de tu app de reseñas si ya tienes una instalada."
+    },
+    {
+      "type": "range",
+      "id": "rating",
+      "label": "Calificación",
+      "min": 0,
+      "max": 5,
+      "step": 0.5,
+      "default": 5
+    },
+    {
+      "type": "text",
+      "id": "review_count",
+      "label": "Número de reseñas",
+      "default": "18.618",
+      "info": "Déjalo vacío para ocultar el bloque."
+    },
+    {
+      "type": "url",
+      "id": "review_url",
+      "label": "Enlace a las reseñas"
+    },
+    {
+      "type": "text",
+      "id": "intro_label",
+      "label": "Texto antes del número",
+      "default": "Ver nuestras"
+    },
+    {
+      "type": "text",
+      "id": "outro_label",
+      "label": "Texto después del número",
+      "default": "reseñas en"
+    },
+    {
+      "type": "text",
+      "id": "platform_label",
+      "label": "Nombre de la plataforma",
+      "default": "Trustpilot"
+    },
+    {
+      "type": "color",
+      "id": "rating_color",
+      "label": "Color de las estrellas",
+      "default": "#00b67a"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Reseñas de producto",
+      "category": "Producto"
+    }
+  ]
+}
+{% endschema %}

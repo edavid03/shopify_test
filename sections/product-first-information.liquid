@@ -1,0 +1,36 @@
+{%- if product.metafields.custom.first_nformation.value != blank or request.visual_preview_mode -%}
+  <div class="product-first-information-section">
+    {% render 'product-first-information', product: product %}
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  .product-first-information-section {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    max-width: 1200px;
+    margin-inline: auto;
+    padding-inline: 20px;
+    overflow-x: clip;
+  }
+
+  @media screen and (min-width: 768px) {
+    .product-first-information-section {
+      padding-inline: 40px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Información Destacada",
+  "tag": "section",
+  "class": "section",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Información Destacada"
+    }
+  ]
+}
+{% endschema %}

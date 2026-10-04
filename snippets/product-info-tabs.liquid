@@ -1,0 +1,439 @@
+{% doc %}
+  Renders the "Ventajas / Ingredientes / Dosificación" tab interface and the full
+  ingredients dialog from the product's `custom` metafields.
+
+  Title, price and buy buttons are intentionally omitted — those belong to the
+  theme's own `text`, `price` and `buy-buttons` blocks.
+
+  @param {object} product - The product whose metafields are rendered.
+  @param {object} settings - Block settings providing the labels, toggles and palette.
+  @param {string} uid - Unique suffix for element ids, so the block can be placed more than once.
+{% enddoc %}
+
+{%- liquid
+  assign benefits_list = product.metafields.custom.benefits_list.value
+  assign featured_ingredients = product.metafields.custom.featured_ingredients.value
+  assign dosage_table = product.metafields.custom.dosage_table.value
+  assign dosage_tip = product.metafields.custom.dosage_tip.value
+  assign full_ingredients_content = product.metafields.custom.full_ingredients_content
+  assign modal_badges = product.metafields.custom.modal_badges.value
+
+  assign has_benefits = false
+  if benefits_list != blank
+    assign has_benefits = true
+  endif
+
+  assign has_ingredients = false
+  if featured_ingredients != blank
+    assign has_ingredients = true
+  endif
+
+  assign has_dosage = false
+  if dosage_table != blank
+    assign has_dosage = true
+  endif
+
+  assign has_modal = false
+  if full_ingredients_content != blank or modal_badges != blank
+    assign has_modal = true
+  endif
+
+  assign has_tabs = false
+  if has_benefits or has_ingredients or has_dosage
+    assign has_tabs = true
+  endif
+
+  # The first tab with content is selected on load, so "Ventajas" is active by default.
+  assign active_tab = ''
+  if has_benefits
+    assign active_tab = 'benefits'
+  elsif has_ingredients
+    assign active_tab = 'ingredients'
+  elsif has_dosage
+    assign active_tab = 'dosage'
+  endif
+-%}
+
+{%- capture icon_check -%}
+  <svg class="pdp-icon pdp-icon--check" viewBox="0 0 20 20" fill="none" aria-hidden="true" focusable="false">
+    <path
+      d="M4.2 10.4l3.6 3.6 7.8-8.8"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2.1"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+  </svg>
+{%- endcapture -%}
+
+{%- capture icon_scoop_full -%}
+  <svg class="pdp-icon pdp-icon--scoop" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+    <path d="M16.1 8.4L21 3.8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
+    <circle cx="10.5" cy="14" r="6" fill="currentColor" />
+    <circle cx="10.5" cy="14" r="6" fill="none" stroke="currentColor" stroke-width="1.6" />
+  </svg>
+{%- endcapture -%}
+
+{%- capture icon_scoop_half -%}
+  <svg class="pdp-icon pdp-icon--scoop" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+    <path d="M16.1 8.4L21 3.8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
+    <path d="M10.5 8A6 6 0 0 0 10.5 20Z" fill="currentColor" />
+    <circle cx="10.5" cy="14" r="6" fill="none" stroke="currentColor" stroke-width="1.6" />
+  </svg>
+{%- endcapture -%}
+
+{%- capture icon_arrow -%}
+  <svg class="pdp-icon pdp-icon--arrow" viewBox="0 0 20 20" fill="none" aria-hidden="true" focusable="false">
+    <path
+      d="M3.5 10h12M11 5.5l4.5 4.5L11 14.5"
+      stroke="currentColor"
+      stroke-width="1.8"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+  </svg>
+{%- endcapture -%}
+
+{%- capture icon_close -%}
+  <svg class="pdp-icon pdp-icon--close" viewBox="0 0 20 20" fill="none" aria-hidden="true" focusable="false">
+    <path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" />
+  </svg>
+{%- endcapture -%}
+
+{%- if has_tabs or has_modal -%}
+  <div class="pdp-info-tabs" data-pdp-info-tabs>
+    {%- if has_tabs -%}
+      <div class="pdp-tabs">
+        <div class="pdp-tabs__list" role="tablist" aria-label="{{ settings.tablist_label | escape }}">
+          {%- if has_benefits -%}
+            <button
+              type="button"
+              class="pdp-tabs__tab"
+              id="pdp-tab-benefits-{{ uid }}"
+              role="tab"
+              aria-controls="pdp-panel-benefits-{{ uid }}"
+              aria-selected="{% if active_tab == 'benefits' %}true{% else %}false{% endif %}"
+              tabindex="{% if active_tab == 'benefits' %}0{% else %}-1{% endif %}"
+              data-pdp-tab
+            >
+              {{ settings.tab_benefits_label | escape }}
+            </button>
+          {%- endif -%}
+
+          {%- if has_ingredients -%}
+            <button
+              type="button"
+              class="pdp-tabs__tab"
+              id="pdp-tab-ingredients-{{ uid }}"
+              role="tab"
+              aria-controls="pdp-panel-ingredients-{{ uid }}"
+              aria-selected="{% if active_tab == 'ingredients' %}true{% else %}false{% endif %}"
+              tabindex="{% if active_tab == 'ingredients' %}0{% else %}-1{% endif %}"
+              data-pdp-tab
+            >
+              {{ settings.tab_ingredients_label | escape }}
+            </button>
+          {%- endif -%}
+
+          {%- if has_dosage -%}
+            <button
+              type="button"
+              class="pdp-tabs__tab"
+              id="pdp-tab-dosage-{{ uid }}"
+              role="tab"
+              aria-controls="pdp-panel-dosage-{{ uid }}"
+              aria-selected="{% if active_tab == 'dosage' %}true{% else %}false{% endif %}"
+              tabindex="{% if active_tab == 'dosage' %}0{% else %}-1{% endif %}"
+              data-pdp-tab
+            >
+              {{ settings.tab_dosage_label | escape }}
+            </button>
+          {%- endif -%}
+        </div>
+
+        <div class="pdp-tabs__panels">
+          {%- if has_benefits -%}
+            <div
+              class="pdp-tabs__panel"
+              id="pdp-panel-benefits-{{ uid }}"
+              role="tabpanel"
+              aria-labelledby="pdp-tab-benefits-{{ uid }}"
+              tabindex="0"
+              data-pdp-panel
+              {% unless active_tab == 'benefits' %}
+                hidden
+              {% endunless %}
+            >
+              <ul class="pdp-benefits" role="list">
+                {%- for benefit in benefits_list -%}
+                  {%- if benefit != blank -%}
+                    <li class="pdp-benefits__item">
+                      <span class="pdp-benefits__icon">{{ icon_check }}</span>
+                      <span class="pdp-benefits__text">{{ benefit | escape }}</span>
+                    </li>
+                  {%- endif -%}
+                {%- endfor -%}
+              </ul>
+            </div>
+          {%- endif -%}
+
+          {%- if has_ingredients -%}
+            <div
+              class="pdp-tabs__panel"
+              id="pdp-panel-ingredients-{{ uid }}"
+              role="tabpanel"
+              aria-labelledby="pdp-tab-ingredients-{{ uid }}"
+              tabindex="0"
+              data-pdp-panel
+              {% unless active_tab == 'ingredients' %}
+                hidden
+              {% endunless %}
+            >
+              {%- if settings.ingredients_heading != blank -%}
+                <p class="pdp-ingredients__heading">{{ settings.ingredients_heading | escape }}</p>
+              {%- endif -%}
+
+              <ul class="pdp-ingredients" role="list">
+                {%- for ingredient in featured_ingredients -%}
+                  {%- liquid
+                    assign ingredient_name = ingredient.name.value
+                    assign ingredient_image = ingredient.image.value
+                    assign ingredient_description = ingredient.description.value
+                    assign ingredient_alt = ingredient_name | escape
+                  -%}
+                  {%- if ingredient_name != blank or ingredient_description != blank -%}
+                    <li class="pdp-ingredients__item">
+                      <div class="pdp-ingredients__avatar">
+                        {%- if ingredient_image != blank -%}
+                          {{
+                            ingredient_image
+                            | image_url: width: 240
+                            | image_tag:
+                              class: 'pdp-ingredients__avatar-img',
+                              widths: '80, 120, 160, 240',
+                              alt: ingredient_alt,
+                              loading: 'lazy',
+                              sizes: '72px'
+                          }}
+                        {%- else -%}
+                          <span class="pdp-ingredients__avatar-fallback" aria-hidden="true">
+                            {{- ingredient_name | slice: 0 | upcase -}}
+                          </span>
+                        {%- endif -%}
+                      </div>
+
+                      <div class="pdp-ingredients__body">
+                        {%- if ingredient_name != blank -%}
+                          <h3 class="pdp-ingredients__name">{{ ingredient_name | escape }}</h3>
+                        {%- endif -%}
+                        {%- if ingredient_description != blank -%}
+                          <p class="pdp-ingredients__description">{{ ingredient_description | escape }}</p>
+                        {%- endif -%}
+                      </div>
+                    </li>
+                  {%- endif -%}
+                {%- endfor -%}
+              </ul>
+
+              {%- if has_modal -%}
+                <button
+                  type="button"
+                  class="pdp-cta"
+                  aria-controls="pdp-full-ingredients-modal-{{ uid }}"
+                  aria-expanded="false"
+                  data-pdp-modal-open
+                >
+                  <span class="pdp-cta__label">{{ settings.modal_cta_label | escape }}</span>
+                  {{ icon_arrow }}
+                </button>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+
+          {%- if has_dosage -%}
+            <div
+              class="pdp-tabs__panel"
+              id="pdp-panel-dosage-{{ uid }}"
+              role="tabpanel"
+              aria-labelledby="pdp-tab-dosage-{{ uid }}"
+              tabindex="0"
+              data-pdp-panel
+              {% unless active_tab == 'dosage' %}
+                hidden
+              {% endunless %}
+            >
+              <div class="pdp-dosage">
+                <div class="pdp-dosage__head" role="presentation">
+                  <span class="pdp-dosage__head-cell">{{ settings.dosage_weight_column_label | escape }}</span>
+                  <span class="pdp-dosage__head-cell">{{ settings.dosage_amount_column_label | escape }}</span>
+                </div>
+
+                <ul class="pdp-dosage__rows" role="list">
+                  {%- for rule in dosage_table -%}
+                    {%- liquid
+                      assign weight_range = rule.weight_range.value
+                      assign dosage_text = rule.dosage_text.value
+                      assign scoop_raw = rule.scoop_count.value
+                      assign button_label = rule.button_label.value
+                      assign button_url = rule.button_url.value
+
+                      assign scoop_count = 0
+                      if scoop_raw != blank
+                        assign scoop_count = scoop_raw | times: 1.0
+                      endif
+
+                      assign scoops_full = scoop_count | floor
+                      assign scoops_remainder = scoop_count | minus: scoops_full
+
+                      assign has_half_scoop = false
+                      if scoops_remainder >= 0.25
+                        assign has_half_scoop = true
+                      endif
+
+                      assign scoop_unit = settings.scoop_unit_label
+                      if scoop_count == 1
+                        assign scoop_unit = settings.scoop_unit_label_singular
+                      endif
+
+                      # A row with a button communicates "see the dedicated product" instead
+                      # of a dose, so the button replaces the scoop/text content rather than
+                      # sitting alongside it.
+                      assign has_button = false
+                      if button_label != blank
+                        assign has_button = true
+                      endif
+                    -%}
+                    <li class="pdp-dosage__row">
+                      {%- if weight_range != blank -%}
+                        <span class="pdp-dosage__weight">{{ weight_range | escape }}</span>
+                      {%- endif -%}
+
+                      {%- if has_button -%}
+                        {%- if button_url != blank -%}
+                          <a class="pdp-dosage__button" href="{{ button_url }}">
+                            {{- button_label | escape -}}
+                            {{ icon_arrow }}
+                          </a>
+                        {%- else -%}
+                          <span class="pdp-dosage__button pdp-dosage__button--static">
+                            {{- button_label | escape -}}
+                          </span>
+                        {%- endif -%}
+                      {%- else -%}
+                        <div class="pdp-dosage__amount">
+                          {%- if scoop_count > 0 -%}
+                            <span
+                              class="pdp-dosage__scoops"
+                              role="img"
+                              aria-label="{{ scoop_raw | escape }} {{ scoop_unit | escape }}"
+                            >
+                              {%- if scoops_full > 0 -%}
+                                {%- for i in (1..scoops_full) -%}
+                                  {{ icon_scoop_full }}
+                                {%- endfor -%}
+                              {%- endif -%}
+                              {%- if has_half_scoop -%}
+                                {{ icon_scoop_half }}
+                              {%- endif -%}
+                            </span>
+                          {%- endif -%}
+
+                          {%- if dosage_text != blank -%}
+                            <span class="pdp-dosage__text">{{ dosage_text | escape }}</span>
+                          {%- endif -%}
+                        </div>
+                      {%- endif -%}
+                    </li>
+                  {%- endfor -%}
+                </ul>
+              </div>
+
+              {%- if dosage_tip != blank -%}
+                <p class="pdp-tip">
+                  <strong class="pdp-tip__label">{{ settings.dosage_tip_label | escape }}</strong>
+                  {{ dosage_tip | escape }}
+                </p>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+        </div>
+      </div>
+    {%- endif -%}
+
+    {%- if has_modal -%}
+      <dialog
+        class="pdp-modal"
+        id="pdp-full-ingredients-modal-{{ uid }}"
+        aria-labelledby="pdp-modal-title-{{ uid }}"
+        data-pdp-modal
+      >
+        <header class="pdp-modal__header">
+          <h2 class="pdp-modal__title" id="pdp-modal-title-{{ uid }}">
+            {{ settings.modal_title | escape }}
+          </h2>
+          <button
+            type="button"
+            class="pdp-modal__close"
+            aria-label="{{ settings.modal_close_label | escape }}"
+            data-pdp-modal-close
+          >
+            {{ icon_close }}
+          </button>
+        </header>
+
+        <div class="pdp-modal__body">
+          {%- if full_ingredients_content != blank -%}
+            <div class="pdp-modal__rte">
+              {{ full_ingredients_content | metafield_tag }}
+            </div>
+          {%- endif -%}
+        </div>
+
+        {%- if modal_badges != blank -%}
+          <footer class="pdp-modal__footer">
+            <ul class="pdp-modal__badges" role="list">
+              {%- for badge in modal_badges -%}
+                {%- liquid
+                  assign badge_title = badge.title.value
+                  assign badge_icon = badge.icon.value
+                  assign badge_alt = badge_title | escape
+                -%}
+                {%- if badge_title != blank or badge_icon != blank -%}
+                  <li class="pdp-modal__badge">
+                    {%- if badge_icon != blank -%}
+                      <span class="pdp-modal__badge-icon">
+                        {{
+                          badge_icon
+                          | image_url: width: 160
+                          | image_tag:
+                            class: 'pdp-modal__badge-img',
+                            widths: '48, 96, 160',
+                            alt: badge_alt,
+                            loading: 'lazy',
+                            sizes: '48px'
+                        }}
+                      </span>
+                    {%- endif -%}
+                    {%- if badge_title != blank -%}
+                      <span class="pdp-modal__badge-title">{{ badge_title | escape }}</span>
+                    {%- endif -%}
+                  </li>
+                {%- endif -%}
+              {%- endfor -%}
+            </ul>
+          </footer>
+        {%- endif -%}
+      </dialog>
+    {%- endif -%}
+  </div>
+{%- elsif request.design_mode -%}
+  <div class="pdp-info-tabs pdp-info-tabs--empty">
+    <p class="pdp-info-tabs__placeholder">
+      Este bloque se muestra cuando el producto tiene contenido en los metafields
+      <code>custom.benefits_list</code>, <code>custom.featured_ingredients</code>,
+      <code>custom.dosage_table</code>, <code>custom.full_ingredients_content</code> o
+      <code>custom.modal_badges</code>.
+    </p>
+  </div>
+{%- endif -%}

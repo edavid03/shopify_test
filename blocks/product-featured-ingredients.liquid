@@ -1,0 +1,39 @@
+{% render 'product-featured-ingredients',
+  product: closest.product,
+  block: block,
+  heading: block.settings.heading,
+  button_label: block.settings.button_label,
+  button_url: block.settings.button_url
+%}
+
+{% schema %}
+{
+  "name": "Ingredientes destacados",
+  "tag": null,
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Título",
+      "default": "¿Qué contiene este producto?"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Texto del botón",
+      "default": "Ver todos los ingredientes"
+    },
+    {
+      "type": "url",
+      "id": "button_url",
+      "label": "Enlace del botón"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Ingredientes destacados",
+      "category": "t:categories.product"
+    }
+  ]
+}
+{% endschema %}

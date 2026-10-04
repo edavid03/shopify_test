@@ -1,0 +1,394 @@
+{%- liquid
+  assign badges = section.blocks | where: 'type', 'badge'
+  assign infos = section.blocks | where: 'type', 'info'
+  assign whatsapp_digits = section.settings.whatsapp | replace: '+', '' | replace: ' ', '' | replace: '-', ''
+-%}
+
+<footer class="fp">
+  <div class="fp__inner">
+    <div class="fp__main">
+      <a href="{{ routes.root_url }}" class="fp__logo">
+        {%- if section.settings.logo != blank -%}
+          {{ section.settings.logo | image_url: width: 400 | image_tag: alt: shop.name, width: 160, loading: 'lazy' }}
+        {%- else -%}
+          {{ shop.name | escape }}
+        {%- endif -%}
+      </a>
+
+      <div class="fp__menus">
+        {%- for i in (1..3) -%}
+          {%- assign menu_key = 'menu_' | append: i -%}
+          {%- assign menu = section.settings[menu_key] -%}
+          {%- assign title_key = 'col_' | append: i | append: '_title' -%}
+          {%- assign items_key = 'col_' | append: i | append: '_items' -%}
+          {%- assign col_title = section.settings[title_key] -%}
+          {%- assign col_items = section.settings[items_key] | newline_to_br | split: '<br />' -%}
+          {%- if menu == blank and col_title != blank -%}
+            <div class="fp__menu">
+              <h3 class="fp__menu-title">{{ col_title | escape }}</h3>
+              <ul class="fp__links fp__links--text">
+                {%- for item in col_items -%}
+                  {%- assign item_text = item | strip -%}
+                  {%- if item_text != blank -%}<li><span>{{ item_text | escape }}</span></li>{%- endif -%}
+                {%- endfor -%}
+              </ul>
+            </div>
+          {%- elsif menu != blank -%}
+            <nav class="fp__menu" aria-label="{{ menu.title | escape }}">
+              <h3 class="fp__menu-title">{{ menu.title | escape }}</h3>
+              <ul class="fp__links">
+                {%- for link in menu.links -%}
+                  <li><a href="{{ link.url }}">{{ link.title | escape }}</a></li>
+                {%- endfor -%}
+              </ul>
+            </nav>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+
+      <div class="fp__signup">
+        {%- if section.settings.signup_heading != blank -%}
+          <h2 class="fp__signup-title">{{ section.settings.signup_heading | escape }}</h2>
+        {%- endif -%}
+        {%- if section.settings.signup_text != blank -%}
+          <p class="fp__signup-text">{{ section.settings.signup_text | escape }}</p>
+        {%- endif -%}
+        {%- form 'customer', class: 'fp__form', id: 'FooterPdpSignup' -%}
+          <input type="hidden" name="contact[tags]" value="newsletter">
+          {%- if form.posted_successfully? -%}
+            <p class="fp__form-message" role="status">{{ section.settings.success_text | escape }}</p>
+          {%- else -%}
+            <label class="visually-hidden" for="FooterPdpEmail">{{ section.settings.email_label | escape }}</label>
+            <input id="FooterPdpEmail" class="fp__input" type="email" name="contact[email]" autocomplete="email" required placeholder="{{ section.settings.email_label | escape }}">
+            <button type="submit" class="fp__submit" aria-label="{{ section.settings.button_label | escape }}">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+            </button>
+            {%- if form.errors -%}
+              <p class="fp__form-message" role="alert">{{ form.errors.translated_fields.email | capitalize }} {{ form.errors.messages.email }}</p>
+            {%- endif -%}
+          {%- endif -%}
+        {%- endform -%}
+      </div>
+
+      {%- if section.settings.trust_text != blank or badges.size > 0 -%}
+        <div class="fp__trust">
+          {%- if section.settings.trust_text != blank -%}
+            <a class="fp__rating" href="{{ section.settings.trust_url | default: '#' }}">
+              <span class="fp__rating-brand"><span class="fp__rating-star" aria-hidden="true">★</span> {{ section.settings.trust_brand | escape }}</span>
+              <span class="fp__rating-stars" aria-hidden="true">★★★★★</span>
+              <span class="fp__rating-text">{{ section.settings.trust_text | escape }}</span>
+            </a>
+          {%- endif -%}
+          {%- for block in badges -%}
+            {%- if block.settings.image != blank -%}
+              <span class="fp__badge" {{ block.shopify_attributes }}>
+                {{ block.settings.image | image_url: width: 240 | image_tag: alt: block.settings.alt, loading: 'lazy', width: 80 }}
+              </span>
+            {%- elsif block.settings.title != blank -%}
+              <span class="fp__badge fp__badge--text" {{ block.shopify_attributes }}>
+                <span class="fp__badge-title">{{ block.settings.title | escape }}</span>
+                {%- if block.settings.subtitle != blank -%}<span class="fp__badge-sub">{{ block.settings.subtitle | escape }}</span>{%- endif -%}
+              </span>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+
+      <div class="fp__social-row">
+        <ul class="fp__social" role="list">
+          {%- if section.settings.facebook_url != blank -%}
+            <li><a href="{{ section.settings.facebook_url }}" aria-label="Facebook" rel="noopener"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h-2a4 4 0 0 0-4 4v3H7v4h2v7h4v-7h3l1-4h-4V7a1 1 0 0 1 1-1h2z"></path></svg></a></li>
+          {%- endif -%}
+          {%- if section.settings.instagram_url != blank -%}
+            <li><a href="{{ section.settings.instagram_url }}" aria-label="Instagram" rel="noopener"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.5" cy="6.5" r="1" fill="currentColor"></circle></svg></a></li>
+          {%- endif -%}
+          {%- if section.settings.linkedin_url != blank -%}
+            <li><a href="{{ section.settings.linkedin_url }}" aria-label="LinkedIn" rel="noopener"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a></li>
+          {%- endif -%}
+          {%- if section.settings.tiktok_url != blank -%}
+            <li><a href="{{ section.settings.tiktok_url }}" aria-label="TikTok" rel="noopener"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3v11a4 4 0 1 1-4-4"></path><path d="M14 3c0 3 2 5 5 5"></path></svg></a></li>
+          {%- endif -%}
+        </ul>
+        {%- if section.settings.partner_text != blank -%}
+          <span class="fp__partner">{{ section.settings.partner_text | escape }}</span>
+        {%- endif -%}
+      </div>
+    </div>
+
+    <aside class="fp__help" aria-labelledby="FooterPdpHelp">
+      <h2 class="fp__help-title" id="FooterPdpHelp">{{ section.settings.help_heading | escape }}</h2>
+      {%- if section.settings.help_text != blank -%}
+        <p class="fp__help-text">{{ section.settings.help_text | escape }}</p>
+      {%- endif -%}
+      {%- if section.settings.help_image != blank -%}
+        <div class="fp__help-image">
+          {{ section.settings.help_image | image_url: width: 700 | image_tag: alt: section.settings.help_heading, loading: 'lazy', sizes: '340px' }}
+        </div>
+      {%- endif -%}
+      {%- if section.settings.whatsapp != blank -%}
+        <p class="fp__contact-label">{{ section.settings.whatsapp_label | escape }}</p>
+        <a class="fp__contact-link" href="https://wa.me/{{ whatsapp_digits }}">{{ section.settings.whatsapp | escape }}</a>
+      {%- endif -%}
+      {%- if section.settings.help_email != blank -%}
+        <p class="fp__contact-label">{{ section.settings.email_contact_label | escape }}</p>
+        <a class="fp__contact-link" href="mailto:{{ section.settings.help_email }}">{{ section.settings.help_email | escape }}</a>
+      {%- endif -%}
+      {%- if infos.size > 0 -%}
+        <ul class="fp__info" role="list">
+          {%- for block in infos -%}
+            <li class="fp__info-item" {{ block.shopify_attributes }}>
+              <span class="fp__info-icon" aria-hidden="true">
+                {%- case block.settings.icon -%}
+                  {%- when 'clock' -%}
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>
+                  {%- when 'hourglass' -%}
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h12M6 22h12M7 2v4a5 5 0 0 0 2 4l3 2-3 2a5 5 0 0 0-2 4v4M17 2v4a5 5 0 0 1-2 4l-3 2 3 2a5 5 0 0 1 2 4v4"></path></svg>
+                  {%- else -%}
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></svg>
+                {%- endcase -%}
+              </span>
+              <span>
+                <span class="fp__info-title">{{ block.settings.title | escape }}</span>
+                <span class="fp__info-text">{{ block.settings.text | escape }}</span>
+              </span>
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+    </aside>
+  </div>
+
+  <div class="fp__bottom">
+    {%- if section.settings.disclaimer != blank -%}
+      <p class="fp__disclaimer">{{ section.settings.disclaimer | escape }}</p>
+    {%- endif -%}
+    <div class="fp__legal">
+      <p class="fp__copy">
+        &copy; {{ shop.name | escape }} {{ 'now' | date: '%Y' }}
+        {%- for policy in shop.policies -%}
+          <span class="fp__sep" aria-hidden="true">|</span><a href="{{ policy.url }}">{{ policy.title | escape }}</a>
+        {%- endfor -%}
+      </p>
+      {%- assign extra_payments = section.settings.extra_payments | newline_to_br | split: '<br />' -%}
+      <ul class="fp__payments" role="list" aria-label="{{ section.settings.payments_label | escape }}">
+        {%- for type in shop.enabled_payment_types -%}
+          <li>{{ type | payment_type_svg_tag: class: 'fp__payment' }}</li>
+        {%- endfor -%}
+        {%- for method in extra_payments -%}
+          {%- assign method_name = method | strip -%}
+          {%- if method_name != blank -%}
+            <li><span class="fp__pay-chip fp__pay-chip--{{ method_name | handleize }}">{{ method_name | escape }}</span></li>
+          {%- endif -%}
+        {%- endfor -%}
+      </ul>
+    </div>
+  </div>
+</footer>
+
+{% stylesheet %}
+  .fp {
+    grid-column: 1 / -1;
+    background: #0F4643;
+    color: #FFFFFF;
+    font-size: 14px;
+    line-height: 1.45;
+  }
+
+  .fp a { color: inherit; }
+  .fp a:hover { color: #BFE3D6; }
+
+  .fp a:focus-visible,
+  .fp button:focus-visible,
+  .fp input:focus-visible {
+    outline: 3px solid #EA580C;
+    outline-offset: 2px;
+  }
+
+  .fp__inner,
+  .fp__bottom {
+    width: min(1232px, 100% - 48px);
+    margin-inline: auto;
+  }
+
+  .fp__inner {
+    padding-block: 72px 36px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 40px;
+  }
+
+  .fp__main { display: flex; flex-direction: column; gap: 32px; min-width: 0; }
+
+  .fp__logo { align-self: flex-start; font-size: 28px; font-weight: 800; color: #FFFFFF !important; text-decoration: none; line-height: 1; }
+  .fp__logo img { display: block; width: 127px; height: auto; }
+  .fp__main > .fp__menus { margin-top: 2px; }
+
+  .fp__menus { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 40px; }
+  .fp__menu-title { margin: 0 0 16px; color: #FFFFFF; font-size: 20px; font-weight: 800; line-height: 24px; }
+  .fp__links { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
+  .fp__links a { text-decoration: none; font-size: 14px; font-weight: 600; line-height: 20px; }
+  .fp__links a:hover { text-decoration: underline; }
+
+  .fp__signup { background: rgb(255 255 255 / 0.04); border: 1px solid rgb(255 255 255 / 0.06); border-radius: 20px; padding: 24px; }
+  .fp__signup-title { margin: 0 0 8px; color: #FFFFFF; font-size: 18px; font-weight: 800; line-height: 1.2; }
+  .fp__signup-text { margin: 0 0 20px; font-size: 14px; }
+  .fp__form { display: flex; gap: 12px; flex-wrap: nowrap; }
+  .fp__input { flex: 1 1 auto; min-width: 0; height: 46px; padding: 0 18px; border: 1px solid rgb(255 255 255 / 0.12); border-radius: 10px; background: rgb(255 255 255 / 0.03); color: #FFFFFF; font: inherit; font-size: 16px; }
+  .fp .fp__input { background-color: rgb(255 255 255 / 0.03); color: #FFFFFF; border: 1px solid rgb(255 255 255 / 0.12); box-shadow: none; }
+  .fp .fp__input::placeholder { color: rgb(255 255 255 / 0.7); opacity: 1; }
+  .fp__submit { flex: none; width: 46px; height: 46px; border: 0; border-radius: 10px; background: #FFFFFF; color: #161618; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .fp__submit:hover { background: #BFE3D6; }
+  .fp__form-message { margin: 0; font-weight: 700; color: #FFFFFF; }
+  .fp__form:has(.fp__form-message) { flex-wrap: wrap; }
+
+  .fp__trust { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 16px 24px; margin-top: -8px; }
+  .fp__rating { display: flex; flex-direction: column; gap: 6px; text-decoration: none; color: #FFFFFF !important; }
+  .fp__rating-brand { font-size: 20px; font-weight: 700; line-height: 1.1; }
+  .fp__rating-star { color: #00B67A; }
+  .fp__rating-stars { align-self: flex-start; background: #00B67A; color: #FFFFFF; padding: 2px 10px; letter-spacing: 6px; font-size: 18px; }
+  .fp__rating-text { font-size: 12px; text-decoration: underline; }
+  .fp__links--text span { font-size: 14px; font-weight: 600; line-height: 20px; }
+  .fp__badge--text { width: 80px; min-height: 110px; padding: 10px 6px; border-radius: 4px; background: #FFFFFF; color: #0F4643; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; text-align: center; }
+  .fp__badge-title { font-size: 11px; font-weight: 800; line-height: 1.15; color: #C2410C; }
+  .fp__badge-sub { font-size: 10px; font-weight: 700; line-height: 1.2; color: #0F4643; }
+  .fp__badge img { display: block; width: 80px; height: auto; border-radius: 4px; }
+
+  .fp__social-row { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 24px; margin-top: 6px; }
+  .fp__social { list-style: none; margin: 0; padding: 0; display: flex; gap: 8px; }
+  .fp__social a { width: 40px; height: 40px; border-radius: 50%; background: rgb(80 129 130 / 0.15); border: 1px solid rgb(255 255 255 / 0.05); color: #FFFFFF; display: flex; align-items: center; justify-content: center; }
+  .fp__social a:hover { background: rgb(80 129 130 / 0.4); }
+  .fp__partner { font-size: 14px; letter-spacing: 0.04em; color: rgb(255 255 255 / 0.7); }
+
+  .fp__bottom { display: flex; flex-direction: column; gap: 32px; padding-block: 0 40px; }
+  .fp__disclaimer { margin: 0; max-width: 960px; font-size: 14px; line-height: 1.45; font-weight: 500; }
+
+  .fp__legal { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 14px 24px; font-size: 14px; }
+  .fp__copy { margin: 0; }
+  .fp__copy a { text-decoration: none; }
+  .fp__copy a:hover { text-decoration: underline; }
+  .fp__sep { margin-inline: 12px; opacity: 0.5; }
+  .fp__payments { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+  .fp__pay-chip { display: inline-flex; align-items: center; justify-content: center; min-width: 38px; height: 23px; padding: 0 6px; border-radius: 3px; background: #FFFFFF; color: #161618; font-size: 9px; font-weight: 800; white-space: nowrap; }
+  .fp__pay-chip--visa { color: #1A1F71; font-style: italic; font-size: 11px; }
+  .fp__pay-chip--mastercard, .fp__pay-chip--maestro { color: #EB001B; }
+  .fp__pay-chip--american-express { background: #1F72CD; color: #FFFFFF; }
+  .fp__pay-chip--paypal { color: #003087; }
+  .fp__pay-chip--ideal { color: #CC0066; }
+  .fp__pay-chip--bancontact { color: #005498; }
+  .fp__pay-chip--klarna { background: #FFB3C7; }
+  .fp__pay-chip--bizum { color: #05A9B4; }
+  .fp__pay-chip--sepa { color: #0A3A82; }
+  .fp__payment { display: block; width: 38px; height: 23px; border-radius: 3px; }
+
+  .fp__help { background: #F8F8F7; color: #161618; border-radius: 12px; padding: 24px; align-self: start; }
+  .fp__help a { color: #069259; text-decoration: underline; text-underline-offset: 2px; font-weight: 600; }
+  .fp__help a:hover { color: #0F5A46; }
+  .fp__help-title { margin: 0 0 8px; font-size: 24px; font-weight: 800; line-height: 1.2; color: #0F5A46; }
+  .fp__help-text { margin: 0 0 22px; font-size: 14px; color: #6E6E6E; }
+  .fp__help-image { margin-bottom: 22px; }
+  .fp__help-image img { display: block; width: 100%; height: 200px; object-fit: contain; }
+  .fp__contact-label { margin: 0 0 4px; font-size: 14px; font-weight: 800; color: #161618; }
+  .fp__contact-link { display: inline-block; margin-bottom: 12px; font-size: 14px; }
+  .fp__info { list-style: none; margin: 8px 0 0; padding: 14px; display: flex; flex-direction: column; gap: 19px; background: #EEF6F1; border: 1px solid #D9E8DF; border-radius: 8px; }
+  .fp__info-item { display: flex; gap: 12px; align-items: flex-start; }
+  .fp__info-icon { flex: none; width: 40px; height: 40px; border-radius: 50%; background: #FFFFFF; border: 1px solid #DBE8E0; color: #069259; display: flex; align-items: center; justify-content: center; }
+  .fp__info-title { display: block; margin-bottom: 4px; font-size: 14px; font-weight: 600; color: #069259; }
+  .fp__info-text { display: block; font-size: 14px; color: #6E6E6E; }
+
+  @media screen and (max-width: 520px) {
+    .fp__form { flex-wrap: wrap; }
+    .fp__input { flex-basis: 100%; }
+    .fp__submit { width: 100%; }
+  }
+
+  @media screen and (min-width: 600px) {
+    .fp__menus { grid-template-columns: repeat(3, minmax(0, 160px)); }
+  }
+
+  @media screen and (min-width: 900px) {
+    .fp__inner { grid-template-columns: minmax(0, 1fr) 340px; gap: 48px; }
+  }
+
+  @media screen and (min-width: 1200px) {
+    .fp__inner { grid-template-columns: minmax(0, 720px) 380px; justify-content: space-between; gap: 40px; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Footer PDP",
+  "tag": "section",
+  "class": "section",
+  "enabled_on": { "groups": ["footer"] },
+  "settings": [
+    { "type": "header", "content": "Marca" },
+    { "type": "image_picker", "id": "logo", "label": "Logo" },
+    { "type": "header", "content": "Menús" },
+    { "type": "link_list", "id": "menu_1", "label": "Menú 1" },
+    { "type": "link_list", "id": "menu_2", "label": "Menú 2" },
+    { "type": "link_list", "id": "menu_3", "label": "Menú 3" },
+    { "type": "paragraph", "content": "Si una columna no tiene menú, se muestra este texto (sin enlaces)." },
+    { "type": "text", "id": "col_1_title", "label": "Columna 1: título" },
+    { "type": "textarea", "id": "col_1_items", "label": "Columna 1: líneas (una por línea)" },
+    { "type": "text", "id": "col_2_title", "label": "Columna 2: título" },
+    { "type": "textarea", "id": "col_2_items", "label": "Columna 2: líneas" },
+    { "type": "text", "id": "col_3_title", "label": "Columna 3: título" },
+    { "type": "textarea", "id": "col_3_items", "label": "Columna 3: líneas" },
+    { "type": "header", "content": "Suscripción" },
+    { "type": "text", "id": "signup_heading", "label": "Título", "default": "10% de descuento en tu primer pedido" },
+    { "type": "text", "id": "signup_text", "label": "Texto", "default": "Regístrate y recibe tu código de descuento directamente en tu correo electrónico." },
+    { "type": "text", "id": "email_label", "label": "Texto del campo", "default": "Tu dirección de correo electrónico" },
+    { "type": "text", "id": "button_label", "label": "Texto accesible del botón", "default": "Suscribirme" },
+    { "type": "text", "id": "success_text", "label": "Mensaje de éxito", "default": "Gracias por suscribirte." },
+    { "type": "header", "content": "Valoración" },
+    { "type": "text", "id": "trust_brand", "label": "Nombre de la plataforma", "default": "Trustpilot" },
+    { "type": "text", "id": "trust_text", "label": "Texto (vacío = no se muestra)", "default": "Basado en 17.399 reseñas" },
+    { "type": "url", "id": "trust_url", "label": "Enlace" },
+    { "type": "header", "content": "Redes sociales" },
+    { "type": "text", "id": "facebook_url", "label": "Facebook" },
+    { "type": "text", "id": "instagram_url", "label": "Instagram" },
+    { "type": "text", "id": "linkedin_url", "label": "LinkedIn" },
+    { "type": "text", "id": "tiktok_url", "label": "TikTok" },
+    { "type": "text", "id": "partner_text", "label": "Texto junto a las redes" },
+    { "type": "header", "content": "Aviso legal" },
+    { "type": "textarea", "id": "disclaimer", "label": "Texto" },
+    { "type": "header", "content": "Pagos" },
+    { "type": "text", "id": "payments_label", "label": "Texto accesible", "default": "Métodos de pago" },
+    { "type": "textarea", "id": "extra_payments", "label": "Métodos de pago adicionales (uno por línea)" },
+    { "type": "header", "content": "Tarjeta de ayuda" },
+    { "type": "text", "id": "help_heading", "label": "Título", "default": "¿Necesitas ayuda?" },
+    { "type": "text", "id": "help_text", "label": "Texto", "default": "Nuestro equipo está listo para ayudarte los 7 días de la semana." },
+    { "type": "image_picker", "id": "help_image", "label": "Imagen" },
+    { "type": "text", "id": "whatsapp_label", "label": "Etiqueta de WhatsApp", "default": "WhatsApp" },
+    { "type": "text", "id": "whatsapp", "label": "Número de WhatsApp" },
+    { "type": "text", "id": "email_contact_label", "label": "Etiqueta del correo", "default": "Correo electrónico" },
+    { "type": "text", "id": "help_email", "label": "Correo de soporte" }
+  ],
+  "blocks": [
+    {
+      "type": "badge",
+      "name": "Sello",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Imagen" },
+        { "type": "text", "id": "alt", "label": "Descripción" },
+        { "type": "text", "id": "title", "label": "Texto del sello (si no hay imagen)" },
+        { "type": "text", "id": "subtitle", "label": "Subtexto del sello" }
+      ]
+    },
+    {
+      "type": "info",
+      "name": "Dato de ayuda",
+      "settings": [
+        { "type": "select", "id": "icon", "label": "Icono", "options": [
+          { "value": "headset", "label": "Auriculares" },
+          { "value": "clock", "label": "Reloj" },
+          { "value": "hourglass", "label": "Reloj de arena" }
+        ], "default": "headset" },
+        { "type": "text", "id": "title", "label": "Título", "default": "Apoyo" },
+        { "type": "text", "id": "text", "label": "Texto", "default": "Disponible los 7 días de la semana." }
+      ]
+    }
+  ],
+  "presets": [{ "name": "Footer PDP" }]
+}
+{% endschema %}

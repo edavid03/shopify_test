@@ -1,0 +1,27 @@
+{%- if product.metafields.custom.ticker_highlights.value != blank or request.visual_preview_mode -%}
+  {% render 'product-marquee-banner', product: product, speed: section.settings.speed %}
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Banda de resaltados",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "range",
+      "id": "speed",
+      "label": "Duración del ciclo (segundos)",
+      "min": 20,
+      "max": 300,
+      "step": 10,
+      "default": 150
+    }
+  ],
+  "presets": [
+    {
+      "name": "Banda de resaltados"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,58 @@
+{%- liquid
+  assign target_product = closest.product | default: product
+-%}
+
+<div class="pdp-accordion-block" {{ block.shopify_attributes }}>
+  {% render 'product-accordion',
+    product: target_product,
+    settings: block.settings,
+    uid: block.id
+  %}
+</div>
+
+{% schema %}
+{
+  "name": "Acordeón de Producto",
+  "tag": null,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Lee la lista de metaobjects del metafield custom.accordion_list y la muestra como acordeón."
+    },
+    {
+      "type": "checkbox",
+      "id": "single_open",
+      "label": "Abrir solo un acordeón a la vez",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Colores"
+    },
+    {
+      "type": "color",
+      "id": "color_text",
+      "label": "Color de los títulos",
+      "default": "#0E3B2E"
+    },
+    {
+      "type": "color",
+      "id": "color_border",
+      "label": "Color de las líneas",
+      "default": "#e5e5e5"
+    },
+    {
+      "type": "color",
+      "id": "color_badge",
+      "label": "Fondo de los números de pasos",
+      "default": "#e8f5e9"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Acordeón de Producto",
+      "category": "Producto"
+    }
+  ]
+}
+{% endschema %}

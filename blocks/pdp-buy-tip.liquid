@@ -1,0 +1,47 @@
+{%- if block.settings.text != blank -%}
+  <div class="pdp-buy-tip" {{ block.shopify_attributes }}>
+    <svg class="pdp-buy-tip__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18M8 3v4M16 3v4"></path></svg>
+    <div class="pdp-buy-tip__text">{{ block.settings.text }}</div>
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  .pdp-buy-tip {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    width: 100%;
+    padding: 12px 14px;
+    background: #F2FBF7;
+    border-radius: 8px;
+    color: #0E3B2E;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  .pdp-buy-tip__icon {
+    flex: none;
+    margin-top: 2px;
+    color: #1E8A5E;
+  }
+
+  .pdp-buy-tip__text p {
+    margin: 0;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Aviso de compra",
+  "tag": null,
+  "settings": [
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Texto",
+      "default": "<p>Dale el producto <strong>todos los días durante al menos 60 días</strong>. Así tiene tiempo de actuar desde dentro hacia fuera.</p>"
+    }
+  ],
+  "presets": [{ "name": "Aviso de compra", "category": "t:categories.product" }]
+}
+{% endschema %}

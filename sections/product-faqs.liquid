@@ -1,0 +1,346 @@
+{%- liquid
+  assign faq_product = product
+  if request.visual_preview_mode and faq_product == blank
+    assign faq_product = collections.all.products.first
+  endif
+
+  comment
+    Cada pestaña lee una lista de metaobjetos con los campos question y answer.
+  endcomment
+  assign faq_item = faq_product.metafields.custom.faqs_item.value
+  assign faq_dispatch = faq_product.metafields.custom.faqs_dispatch.value
+  assign faq_pay = faq_product.metafields.custom.faqs_pay.value
+
+  assign tab_labels = section.settings.tab_item_label | append: '§§' | append: section.settings.tab_dispatch_label | append: '§§' | append: section.settings.tab_pay_label | split: '§§'
+  assign uid = section.id
+-%}
+
+{%- if faq_item != blank or faq_dispatch != blank or faq_pay != blank -%}
+  <div class="product-faqs" data-product-faqs>
+    <div class="product-faqs__container">
+      {%- if section.settings.heading != blank or section.settings.subheading != blank -%}
+        <header class="product-faqs__header">
+          {%- if section.settings.heading != blank -%}
+            <h2 class="product-faqs__heading">{{ section.settings.heading | escape }}</h2>
+          {%- endif -%}
+          {%- if section.settings.subheading != blank -%}
+            <p class="product-faqs__subheading">{{ section.settings.subheading | escape }}</p>
+          {%- endif -%}
+        </header>
+      {%- endif -%}
+
+      {%- assign tab_index = 0 -%}
+      <div class="product-faqs__tabs" role="tablist" aria-label="{{ section.settings.heading | escape }}">
+        {%- for i in (0..2) -%}
+          {%- liquid
+            case i
+            when 0
+              assign faqs = faq_item
+            when 1
+              assign faqs = faq_dispatch
+            when 2
+              assign faqs = faq_pay
+          endcase -%}
+          {%- if faqs != blank -%}
+            <button
+              type="button"
+              class="product-faqs__tab{% if tab_index == 0 %} is-active{% endif %}"
+              role="tab"
+              id="faqs-tab-{{ uid }}-{{ i }}"
+              aria-controls="faqs-panel-{{ uid }}-{{ i }}"
+              aria-selected="{% if tab_index == 0 %}true{% else %}false{% endif %}"
+              tabindex="{% if tab_index == 0 %}0{% else %}-1{% endif %}"
+              data-faqs-tab
+            >
+              {{- tab_labels[i] | escape -}}
+            </button>
+            {%- assign tab_index = tab_index | plus: 1 -%}
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+
+      {%- assign tab_index = 0 -%}
+      {%- for i in (0..2) -%}
+        {%- liquid
+          case i
+          when 0
+            assign faqs = faq_item
+          when 1
+            assign faqs = faq_dispatch
+          when 2
+            assign faqs = faq_pay
+        endcase -%}
+        {%- if faqs != blank -%}
+          <div
+            class="product-faqs__panel"
+            role="tabpanel"
+            id="faqs-panel-{{ uid }}-{{ i }}"
+            aria-labelledby="faqs-tab-{{ uid }}-{{ i }}"
+            data-faqs-panel
+            {% unless tab_index == 0 %}hidden{% endunless %}
+          >
+            {%- for faq in faqs -%}
+              {%- if faq.question.value != blank -%}
+                <details class="product-faqs__item">
+                  <summary class="product-faqs__question">
+                    <span>{{ faq.question.value | escape }}</span>
+                    <span class="product-faqs__chevron" aria-hidden="true">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </span>
+                  </summary>
+                  <div class="product-faqs__answer rte">
+                    {%- if faq.answer.type == 'rich_text_field' -%}
+                      {{ faq.answer | metafield_tag }}
+                    {%- else -%}
+                      {{ faq.answer.value | escape | newline_to_br }}
+                    {%- endif -%}
+                  </div>
+                </details>
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+          {%- assign tab_index = tab_index | plus: 1 -%}
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      const root = document.currentScript.previousElementSibling;
+      if (!root || root.dataset.faqsReady) return;
+      root.dataset.faqsReady = 'true';
+
+      const tabs = Array.from(root.querySelectorAll('[data-faqs-tab]'));
+      const panels = Array.from(root.querySelectorAll('[data-faqs-panel]'));
+
+      const select = (index, focus) => {
+        tabs.forEach((tab, i) => {
+          const active = i === index;
+          tab.classList.toggle('is-active', active);
+          tab.setAttribute('aria-selected', String(active));
+          tab.tabIndex = active ? 0 : -1;
+          panels[i].hidden = !active;
+        });
+        if (focus) tabs[index].focus();
+      };
+
+      tabs.forEach((tab, i) => {
+        tab.addEventListener('click', () => select(i));
+        tab.addEventListener('keydown', (event) => {
+          const last = tabs.length - 1;
+          if (event.key === 'ArrowRight') select(i === last ? 0 : i + 1, true);
+          else if (event.key === 'ArrowLeft') select(i === 0 ? last : i - 1, true);
+          else return;
+          event.preventDefault();
+        });
+      });
+    })();
+  </script>
+{%- endif -%}
+
+{% stylesheet %}
+  .product-faqs {
+    padding-block: 48px;
+    background-color: var(--faqs-background, #f7f7f7);
+    box-shadow: 0 0 0 100vmax var(--faqs-background, #f7f7f7);
+    clip-path: inset(0 -100vmax);
+    color: #0E3B2E;
+  }
+
+  .product-faqs__container {
+    max-width: 800px;
+    margin-inline: auto;
+    padding-inline: 20px;
+  }
+
+  .product-faqs__header {
+    margin-bottom: 32px;
+    text-align: center;
+  }
+
+  .product-faqs__heading {
+    margin: 0 0 12px;
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.2;
+    color: #0E3B2E;
+  }
+
+  .product-faqs__subheading {
+    margin: 0;
+    font-size: 18px;
+    line-height: 1.5;
+    color: #444;
+  }
+
+  .product-faqs__tabs {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 40px;
+  }
+
+  .product-faqs__tab {
+    min-width: 150px;
+    padding: 14px 24px;
+    border: 0;
+    border-radius: 999px;
+    background-color: #eceeed;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    color: #4b8068;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  .product-faqs__tab.is-active {
+    background-color: #1E8A5E;
+    color: #fff;
+  }
+
+  .product-faqs__tab:focus-visible,
+  .product-faqs__question:focus-visible {
+    outline: 2px solid #1E8A5E;
+    outline-offset: 2px;
+  }
+
+  .product-faqs__panel {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .product-faqs__panel[hidden] {
+    display: none;
+  }
+
+  .product-faqs__item {
+    border: 1px solid #e5e5e5;
+    border-radius: 10px;
+    background-color: #fff;
+  }
+
+  .product-faqs__question {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px 24px;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.4;
+    color: #0E3B2E;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .product-faqs__question::-webkit-details-marker {
+    display: none;
+  }
+
+  .product-faqs__chevron {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    background-color: #fff;
+    transition: transform 0.2s ease;
+  }
+
+  .product-faqs__item[open] .product-faqs__chevron {
+    transform: rotate(180deg);
+  }
+
+  .product-faqs__answer {
+    padding: 0 24px 20px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #333;
+  }
+
+  .product-faqs__answer > :first-child {
+    margin-top: 0;
+  }
+
+  .product-faqs__answer > :last-child {
+    margin-bottom: 0;
+  }
+
+  @media screen and (min-width: 768px) {
+    .product-faqs {
+      padding-block: 72px;
+    }
+
+    .product-faqs__heading {
+      font-size: 34px;
+    }
+  }
+
+  @media screen and (max-width: 767px) {
+    .product-faqs__tab {
+      flex: 1 1 auto;
+      min-width: 0;
+      padding-inline: 16px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Preguntas frecuentes",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Encabezado"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Título",
+      "default": "Preguntas frecuentes"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subtítulo",
+      "default": "Ver nuestras respuestas"
+    },
+    {
+      "type": "header",
+      "content": "Pestañas"
+    },
+    {
+      "type": "text",
+      "id": "tab_item_label",
+      "label": "Pestaña: custom.faqs_item",
+      "default": "Producto"
+    },
+    {
+      "type": "text",
+      "id": "tab_dispatch_label",
+      "label": "Pestaña: custom.faqs_dispatch",
+      "default": "Despacho"
+    },
+    {
+      "type": "text",
+      "id": "tab_pay_label",
+      "label": "Pestaña: custom.faqs_pay",
+      "default": "Pedido y pago"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Preguntas frecuentes"
+    }
+  ]
+}
+{% endschema %}

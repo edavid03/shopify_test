@@ -1,0 +1,64 @@
+{%- liquid
+  assign target_product = closest.product | default: product
+  assign subtitle = target_product.metafields.custom.hero_subtitle.value
+-%}
+
+{%- if subtitle != blank -%}
+  <p
+    class="pdp-subtitle"
+    style="--pdp-subtitle-color: {{ block.settings.color_text }};"
+    {{ block.shopify_attributes }}
+  >
+    {{- subtitle | escape -}}
+  </p>
+{%- elsif request.design_mode -%}
+  <p class="pdp-subtitle pdp-subtitle--empty" {{ block.shopify_attributes }}>
+    Este bloque se muestra cuando el producto tiene valor en
+    <code>custom.hero_subtitle</code>.
+  </p>
+{%- endif -%}
+
+{% stylesheet %}
+  .pdp-subtitle {
+    margin: 0;
+    max-width: 52ch;
+    color: var(--pdp-subtitle-color, #55665F);
+    font-size: 17px;
+    line-height: 1.5;
+    text-wrap: pretty;
+  }
+
+  .pdp-subtitle--empty {
+    padding: 10px 12px;
+    border: 1px dashed #E5ECE8;
+    border-radius: 12px;
+    background: #f7f9f8;
+    color: #55665F;
+    font-size: 13px;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Subtítulo de producto",
+  "tag": null,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Lee el metafield custom.hero_subtitle y lo muestra como un párrafo bajo el título."
+    },
+    {
+      "type": "color",
+      "id": "color_text",
+      "label": "Color del texto",
+      "default": "#55665F"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Subtítulo de producto",
+      "category": "Producto"
+    }
+  ]
+}
+{% endschema %}

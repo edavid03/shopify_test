@@ -1,0 +1,112 @@
+{%- comment -%}
+  Banda de resaltados (marquee)
+  Accepts:
+  - product: {Object} Product object (defaults to the product in context)
+  - block: {Object} Optional block, used for shopify_attributes
+  - speed: {Number} Seconds per full loop (default 150)
+{%- endcomment -%}
+
+{%- liquid
+  assign marquee_product = product
+  if request.visual_preview_mode and marquee_product == blank
+    assign marquee_product = collections.all.products.first
+  endif
+  assign highlights = marquee_product.metafields.custom.ticker_highlights.value
+  assign marquee_speed = speed | default: 150
+-%}
+
+{%- if highlights != blank -%}
+  <div
+    class="marquee-banner"
+    style="--marquee-duration: {{ marquee_speed }}s;"
+    {{ block.shopify_attributes }}
+  >
+    <div class="marquee-banner__track">
+      {%- for group in (1..2) -%}
+        <ul class="marquee-banner__group" role="list"{% if group == 2 %} aria-hidden="true"{% endif %}>
+          {%- for i in (1..3) -%}
+            {%- for highlight in highlights -%}
+              {%- assign text = highlight | strip -%}
+              {%- if text != blank -%}
+                <li class="marquee-banner__item">
+                  <svg
+                    class="marquee-banner__icon"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="3"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                    focusable="false"
+                  >
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <span>{{ text | escape }}</span>
+                </li>
+              {%- endif -%}
+            {%- endfor -%}
+          {%- endfor -%}
+        </ul>
+      {%- endfor -%}
+    </div>
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  .marquee-banner {
+    position: relative;
+    grid-column: 1 / -1;
+    width: 100%;
+    overflow: hidden;
+    padding-block: 14px;
+    background-color: #0b3323;
+    color: #fff;
+  }
+
+  .marquee-banner__track {
+    display: flex;
+    width: max-content;
+    animation: product-marquee-scroll var(--marquee-duration, 150s) linear infinite;
+    will-change: transform;
+  }
+
+  .marquee-banner__group {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .marquee-banner__item {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    padding-right: 48px;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.4;
+    white-space: nowrap;
+  }
+
+  .marquee-banner__icon {
+    flex: 0 0 auto;
+    margin-right: 8px;
+  }
+
+  /* Right to left. For left to right swap the from/to values. */
+  @keyframes product-marquee-scroll {
+    from {
+      transform: translateX(0);
+    }
+
+    to {
+      transform: translateX(-50%);
+    }
+  }
+{% endstylesheet %}

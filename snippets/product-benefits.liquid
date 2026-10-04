@@ -1,0 +1,213 @@
+{%- comment -%}
+  Beneficios del Producto
+  Accepts:
+  - product: {Object} Product object (defaults to the product in context)
+  - block: {Object} Optional block, used for shopify_attributes
+{%- endcomment -%}
+
+{%- liquid
+  assign benefits_product = product
+  if request.visual_preview_mode and benefits_product == blank
+    assign benefits_product = collections.all.products.first
+  endif
+  assign benefit = benefits_product.metafields.custom.benefits.value
+-%}
+
+{%- if benefit != blank -%}
+  {%- liquid
+    assign benefit_image = benefit.image.value
+    assign benefit_main_title = benefit.main_title.value
+    assign benefit_subtitle = benefit.subtitle.value
+
+    comment
+      Los campos pueden llegar como lista nativa o como texto JSON ["a","b"].
+      Se separa por "," y no por coma suelta para no cortar descripciones con comas.
+      Si el texto no es JSON, se usa la viñeta • como separador.
+    endcomment
+
+    assign titles_raw = benefit.title_benefit.value
+    if benefit.title_benefit.type contains 'list'
+      assign titles = titles_raw
+    else
+      assign titles_clean = titles_raw | strip | remove_first: '["' | replace: '"]', ''
+      if titles_clean contains '","'
+        assign titles = titles_clean | split: '","'
+      else
+        assign titles = titles_clean | split: '•'
+      endif
+    endif
+
+    assign texts_raw = benefit.text_benefit.value
+    if benefit.text_benefit.type contains 'list'
+      assign texts = texts_raw
+    else
+      assign texts_clean = texts_raw | strip | remove_first: '["' | replace: '"]', ''
+      if texts_clean contains '","'
+        assign texts = texts_clean | split: '","'
+      else
+        assign texts = texts_clean | split: '•'
+      endif
+    endif
+  -%}
+
+  <div class="product-benefits" {{ block.shopify_attributes }}>
+    <div class="product-benefits__inner">
+      {%- if benefit_image != blank -%}
+        <div class="product-benefits__media">
+          {{
+            benefit_image
+            | image_url: width: 1200
+            | image_tag:
+              class: 'product-benefits__image',
+              loading: 'lazy',
+              widths: '400, 600, 800, 1000, 1200',
+              sizes: '(min-width: 768px) 50vw, 100vw',
+              alt: benefit_image.alt
+          }}
+        </div>
+      {%- endif -%}
+
+      <div class="product-benefits__content">
+        {%- if benefit_main_title != blank -%}
+          <h2 class="product-benefits__title">{{ benefit_main_title | escape }}</h2>
+        {%- endif -%}
+        {%- if benefit_subtitle != blank -%}
+          <p class="product-benefits__subtitle">{{ benefit_subtitle | escape }}</p>
+        {%- endif -%}
+
+        {%- if titles.size > 0 -%}
+          <ul class="product-benefits__list">
+            {%- for title in titles -%}
+              {%- assign item_title = title | strip -%}
+              {%- assign item_text = texts[forloop.index0] | strip -%}
+              {%- if item_title != blank -%}
+                <li class="product-benefits__item">
+                  <svg
+                    class="product-benefits__icon"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                    focusable="false"
+                  >
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <div class="product-benefits__item-body">
+                    <h3 class="product-benefits__item-title">{{ item_title | escape }}</h3>
+                    {%- if item_text != blank -%}
+                      <p class="product-benefits__item-text">{{ item_text | escape }}</p>
+                    {%- endif -%}
+                  </div>
+                </li>
+              {%- endif -%}
+            {%- endfor -%}
+          </ul>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  .product-benefits {
+    position: relative;
+    grid-column: 1 / -1;
+    width: 100%;
+    padding-block: 40px;
+  }
+
+  .product-benefits__inner {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+    align-items: center;
+  }
+
+  .product-benefits__image {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+  }
+
+  .product-benefits__title {
+    margin: 0 0 8px;
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.2;
+    color: #0E3B2E;
+  }
+
+  .product-benefits__subtitle {
+    margin: 0 0 24px;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #666;
+  }
+
+  .product-benefits__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .product-benefits__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding-block: 15px;
+    border-bottom: 1px solid #eaeaea;
+  }
+
+  .product-benefits__item:first-child {
+    padding-top: 0;
+  }
+
+  .product-benefits__item:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+
+  .product-benefits__icon {
+    flex: 0 0 auto;
+    margin-top: 1px;
+    color: #0E3B2E;
+  }
+
+  .product-benefits__item-title {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.4;
+    color: #111;
+  }
+
+  .product-benefits__item-text {
+    margin: 4px 0 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #444;
+  }
+
+  @media screen and (min-width: 768px) {
+    .product-benefits {
+      padding-block: 60px;
+    }
+
+    .product-benefits__inner {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 48px;
+    }
+
+    .product-benefits__title {
+      font-size: 32px;
+    }
+  }
+{% endstylesheet %}

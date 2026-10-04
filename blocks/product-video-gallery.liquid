@@ -1,0 +1,26 @@
+{%- liquid
+  assign target_product = closest.product | default: product
+-%}
+
+<div class="video-gallery-block" {{ block.shopify_attributes }}>
+  {% render 'product-video-gallery', product: target_product, uid: block.id %}
+</div>
+
+{% schema %}
+{
+  "name": "Videos del Producto",
+  "tag": null,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Lee la lista de metaobjects del metafield custom.product_videos y la muestra como carrusel horizontal de vídeos."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Videos del Producto",
+      "category": "Producto"
+    }
+  ]
+}
+{% endschema %}

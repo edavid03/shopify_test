@@ -1,0 +1,103 @@
+{%- liquid
+  assign target_product = closest.product | default: product
+  assign badges = target_product.metafields.custom.header_badges.value
+-%}
+
+{%- if badges != blank -%}
+  <ul
+    class="pdp-badges"
+    role="list"
+    style="
+      --pdp-badges-color: {{ block.settings.color_text }};
+      --pdp-badges-background: {{ block.settings.color_background }};
+      --pdp-badges-border: {{ block.settings.color_border }};
+    "
+    {{ block.shopify_attributes }}
+  >
+    {%- for badge in badges -%}
+      {%- if badge != blank -%}
+        <li class="pdp-badges__item">{{ badge | escape }}</li>
+      {%- endif -%}
+    {%- endfor -%}
+  </ul>
+{%- elsif request.design_mode -%}
+  <p class="pdp-badges pdp-badges--empty" {{ block.shopify_attributes }}>
+    Este bloque se muestra cuando el producto tiene valores en
+    <code>custom.header_badges</code>.
+  </p>
+{%- endif -%}
+
+{% stylesheet %}
+  /* Namespaced as pdp-badges (not product-badges): the theme's own product-card
+     sale/new tags already own the .product-badges class with position: absolute,
+     and reusing that name here caused the pills to overlap the title instead of
+     stacking above it. */
+  .pdp-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .pdp-badges__item {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 12px;
+    border: 1px solid var(--pdp-badges-border, rgba(6, 146, 89, 0.25));
+    border-radius: 999px;
+    background: var(--pdp-badges-background, #F2FBF7);
+    color: var(--pdp-badges-color, #0E3B2E);
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.4;
+  }
+
+  .pdp-badges--empty {
+    margin: 0;
+    padding: 12px 14px;
+    border: 1px dashed #E5ECE8;
+    border-radius: 12px;
+    background: #f7f9f8;
+    color: #55665F;
+    font-size: 13px;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Badges de producto",
+  "tag": null,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Lee la lista de texto del metafield custom.header_badges y la muestra como etiquetas."
+    },
+    {
+      "type": "color",
+      "id": "color_text",
+      "label": "Color del texto",
+      "default": "#0E3B2E"
+    },
+    {
+      "type": "color",
+      "id": "color_background",
+      "label": "Color de fondo",
+      "default": "#F2FBF7"
+    },
+    {
+      "type": "color",
+      "id": "color_border",
+      "label": "Color del borde",
+      "default": "#06925940"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Badges de producto",
+      "category": "Producto"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,393 @@
+{% doc %}
+  Renders the product accordion (FAQ / product details) from the product's
+  `custom.accordion_list` metafield (list of `accordion_item` metaobjects).
+
+  @param {object} product - The product whose metafield is rendered.
+  @param {object} settings - Block settings (single_open, color_text, color_border, color_badge).
+  @param {string} uid - Unique suffix for element ids.
+{% enddoc %}
+
+{%- liquid
+  assign accordion_items = product.metafields.custom.custom.value
+-%}
+
+{%- if accordion_items != blank -%}
+  <div
+    class="pdp-accordion"
+    data-pdp-accordion
+    data-single-open="{{ settings.single_open }}"
+    style="
+      --pdp-accordion-color: {{ settings.color_text }};
+      --pdp-accordion-border: {{ settings.color_border }};
+      --pdp-accordion-badge: {{ settings.color_badge }};
+    "
+  >
+    {%- for item in accordion_items -%}
+      {%- liquid
+        assign item_title = item.title.value
+        assign steps = item.steps.value
+        assign outro_text = item.outro_text.value
+        assign panel_id = 'pdp-accordion-panel-' | append: uid | append: '-' | append: forloop.index
+      -%}
+
+      {%- if item_title != blank -%}
+        <details class="pdp-accordion__item" data-pdp-accordion-item>
+          <summary class="pdp-accordion__summary" aria-controls="{{ panel_id }}">
+            <span class="pdp-accordion__title">{{ item_title | escape }}</span>
+            <span class="pdp-accordion__icon" aria-hidden="true"></span>
+          </summary>
+
+          <div class="pdp-accordion__panel" id="{{ panel_id }}">
+            <div class="pdp-accordion__content">
+              {% if item.intro_text.value != blank %}
+                <div class="accordion__text">
+                  {{ item.intro_text.value | newline_to_br }}
+                </div>
+              {% endif %}
+
+              {% if item.check_list.value != blank %}
+                <ul class="accordion__checklist">
+                  {% for check_item in item.check_list.value %}
+                    <li>
+                      <svg class="accordion__check-icon" viewBox="0 0 20 20" fill="none">
+                        <path d="M16.6666 5L7.49992 14.1667L3.33325 10" stroke="#0E3B2E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span>{{ check_item }}</span>
+                    </li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+
+              {%- if steps != blank and steps.size > 0 -%}
+                <ol class="pdp-accordion__steps" role="list">
+                  {%- for step in steps -%}
+                    {%- liquid
+                      assign step_number = step.step_number.value
+                      assign step_title = step.title.value
+                      assign step_description = step.description.value
+                    -%}
+                    {%- if step_title != blank or step_description != blank -%}
+                      <li class="pdp-accordion__step">
+                        <span class="pdp-accordion__step-badge" aria-hidden="true">
+                          {{- step_number | default: forloop.index -}}
+                        </span>
+                        <div class="pdp-accordion__step-body">
+                          {%- if step_title != blank -%}
+                            <p class="pdp-accordion__step-title">{{ step_title | escape }}</p>
+                          {%- endif -%}
+                          {%- if step_description != blank -%}
+                            <p class="pdp-accordion__step-description">
+                              {{- step_description | escape | newline_to_br -}}
+                            </p>
+                          {%- endif -%}
+                        </div>
+                      </li>
+                    {%- endif -%}
+                  {%- endfor -%}
+                </ol>
+              {%- endif -%}
+
+              {%- if outro_text != blank -%}
+                <p class="pdp-accordion__outro">{{ outro_text | escape }}</p>
+              {%- endif -%}
+            </div>
+          </div>
+        </details>
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+{%- elsif request.design_mode -%}
+  <p class="pdp-accordion pdp-accordion--empty">
+    Este bloque se muestra cuando el producto tiene valores en
+    <code>custom.accordion_list</code>.
+  </p>
+{%- endif -%}
+
+{% stylesheet %}
+  .pdp-accordion {
+    --pdp-accordion-color: #0E3B2E;
+    --pdp-accordion-border: #e5e5e5;
+    --pdp-accordion-badge: #e8f5e9;
+    border-block-start: 1px solid var(--pdp-accordion-border);
+    color: var(--pdp-accordion-color);
+  }
+
+  .pdp-accordion__item {
+    border-block-end: 1px solid var(--pdp-accordion-border);
+  }
+
+  .pdp-accordion__summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding-block: 22px;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .pdp-accordion__summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .pdp-accordion__summary:focus-visible {
+    outline: 2px solid var(--pdp-accordion-color);
+    outline-offset: 2px;
+  }
+
+  .pdp-accordion__title {
+    font-size: 17px;
+    font-weight: 800;
+    line-height: 1.35;
+  }
+
+  .pdp-accordion__icon {
+    position: relative;
+    flex: 0 0 auto;
+    width: 12px;
+    height: 12px;
+  }
+
+  .pdp-accordion__icon::before,
+  .pdp-accordion__icon::after {
+    content: '';
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: 0;
+    width: 100%;
+    height: 1.5px;
+    background: currentColor;
+    transition: transform 0.25s ease;
+  }
+
+  .pdp-accordion__icon::after {
+    transform: rotate(90deg);
+  }
+
+  .pdp-accordion__item[open] .pdp-accordion__icon::after {
+    transform: rotate(0deg);
+  }
+
+  .pdp-accordion__panel {
+    overflow: hidden;
+  }
+
+  .pdp-accordion__content {
+    display: grid;
+    gap: 16px;
+    padding-block-end: 24px;
+    color: #333333;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .pdp-accordion__content p {
+    margin: 0;
+  }
+
+  .accordion__text {
+    font-weight: 400;
+  }
+
+  .accordion__text p {
+    margin: 0 0 16px;
+  }
+
+  .accordion__text p:last-child {
+    margin-block-end: 0;
+  }
+
+  /* Plain lists (e.g. from rich text) get a thin green check instead of bullets. */
+  .pdp-accordion__content ul:not(.accordion__checklist) {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .pdp-accordion__content ul:not(.accordion__checklist) li {
+    position: relative;
+    margin-block-end: 12px;
+    padding-inline-start: 30px;
+  }
+
+  .pdp-accordion__content ul:not(.accordion__checklist) li::before {
+    content: '';
+    position: absolute;
+    inset-block-start: 0.2em;
+    inset-inline-start: 0;
+    width: 18px;
+    height: 18px;
+    background: #1f734f;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 10.5l4 4 8-9'/%3E%3C/svg%3E") center / contain no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 10.5l4 4 8-9'/%3E%3C/svg%3E") center / contain no-repeat;
+  }
+
+  .accordion__checklist,
+  .pdp-accordion__steps {
+    display: grid;
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .accordion__checklist li {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+  }
+
+  .accordion__check-icon {
+    flex: 0 0 auto;
+    width: 17px;
+    height: 17px;
+    margin-block-start: 3px;
+  }
+
+  .pdp-accordion__step {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .pdp-accordion__step-badge {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--pdp-accordion-badge);
+    color: var(--pdp-accordion-color);
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .pdp-accordion__step-title {
+    color: var(--pdp-accordion-color);
+    font-weight: 700;
+  }
+
+  .pdp-accordion__step-description {
+    margin-block-start: 2px;
+  }
+
+  .pdp-accordion__outro {
+    color: var(--pdp-accordion-color);
+    font-weight: 600;
+  }
+
+  .pdp-accordion--empty {
+    margin: 0;
+    padding: 12px 14px;
+    border: 1px dashed #E5ECE8;
+    border-radius: 12px;
+    background: #f7f9f8;
+    color: #55665F;
+    font-size: 13px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pdp-accordion__icon::before,
+    .pdp-accordion__icon::after {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  (function () {
+    const DURATION = 260;
+    const EASING = 'cubic-bezier(0.22, 0.61, 0.36, 1)';
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    function animatePanel(panel, from, to, onFinish) {
+      if (reduceMotion.matches || typeof panel.animate !== 'function') {
+        onFinish();
+        return;
+      }
+
+      if (panel._pdpAnimation) panel._pdpAnimation.cancel();
+
+      const animation = panel.animate(
+        { height: [from + 'px', to + 'px'] },
+        { duration: DURATION, easing: EASING }
+      );
+
+      panel._pdpAnimation = animation;
+      animation.onfinish = () => {
+        panel._pdpAnimation = null;
+        onFinish();
+      };
+      animation.oncancel = () => {
+        panel._pdpAnimation = null;
+      };
+    }
+
+    function openItem(item) {
+      const panel = item.querySelector('.pdp-accordion__panel');
+      const startHeight = item.open ? panel.offsetHeight : 0;
+
+      item.dataset.pdpOpen = 'true';
+      item.open = true;
+      animatePanel(panel, startHeight, panel.scrollHeight, () => {});
+    }
+
+    function closeItem(item) {
+      if (!item.open) return;
+
+      const panel = item.querySelector('.pdp-accordion__panel');
+
+      item.dataset.pdpOpen = 'false';
+      animatePanel(panel, panel.offsetHeight, 0, () => {
+        item.open = false;
+      });
+    }
+
+    function initAccordion(root) {
+      if (root.dataset.pdpReady === 'true') return;
+      root.dataset.pdpReady = 'true';
+
+      const items = Array.from(root.querySelectorAll('[data-pdp-accordion-item]'));
+      const singleOpen = root.dataset.singleOpen === 'true';
+
+      items.forEach((item) => {
+        const summary = item.querySelector('summary');
+        if (!summary) return;
+
+        summary.addEventListener('click', (event) => {
+          event.preventDefault();
+
+          if (item.dataset.pdpOpen === 'true') {
+            closeItem(item);
+            return;
+          }
+
+          if (singleOpen) {
+            items.forEach((other) => {
+              if (other !== item) closeItem(other);
+            });
+          }
+
+          openItem(item);
+        });
+      });
+    }
+
+    function initAll(scope) {
+      const container = scope && scope.querySelectorAll ? scope : document;
+      container.querySelectorAll('[data-pdp-accordion]').forEach(initAccordion);
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => initAll());
+    } else {
+      initAll();
+    }
+
+    document.addEventListener('shopify:section:load', (event) => initAll(event.target));
+    document.addEventListener('shopify:block:select', (event) => initAll(event.target));
+  })();
+{% endjavascript %}

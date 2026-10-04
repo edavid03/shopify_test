@@ -1,0 +1,230 @@
+{%- comment -%}
+  Ingredientes destacados
+  Accepts:
+  - product: {Object} Product object (defaults to the product in context)
+  - block: {Object} Optional block, used for shopify_attributes
+  - heading: {String} Section heading
+  - button_label: {String} CTA label
+  - button_url: {String} Fallback url, used only when the ingredients modal is not on the page
+{%- endcomment -%}
+
+{%- liquid
+  assign fi_product = product
+  if request.visual_preview_mode and fi_product == blank
+    assign fi_product = collections.all.products.first
+  endif
+  assign ingredients = fi_product.metafields.custom.ingredients_second.value
+  assign fi_heading = heading | default: '¿Qué contiene este producto?'
+-%}
+
+{%- if ingredients != blank -%}
+  <div class="featured-ingredients" {{ block.shopify_attributes }}>
+    <div class="featured-ingredients__inner">
+      {%- if fi_heading != blank -%}
+        <h2 class="featured-ingredients__heading">{{ fi_heading | escape }}</h2>
+      {%- endif -%}
+
+      <ul class="featured-ingredients__grid">
+        {%- for item in ingredients -%}
+          {%- liquid
+            assign item_title = item.title.value | default: item.name.value
+            assign item_description = item.description.value | default: item.text.value
+            assign item_image = item.image.value | default: item.photo.value
+            assign item_tag = item.benefit.value | default: item.benefits.value | default: item.tag.value | default: item.badge.value | default: item.category.value | default: item.label.value
+          -%}
+          <li class="featured-ingredients__card">
+            <div class="featured-ingredients__media">
+              {%- if item_image != blank -%}
+                {{
+                  item_image
+                  | image_url: width: 600
+                  | image_tag:
+                    class: 'featured-ingredients__image',
+                    loading: 'lazy',
+                    widths: '300, 450, 600',
+                    sizes: '(min-width: 768px) 33vw, 100vw',
+                    alt: item_title
+                }}
+              {%- endif -%}
+              {%- if item_tag != blank -%}
+                <span class="featured-ingredients__tag">{{ item_tag | escape }}</span>
+              {%- endif -%}
+            </div>
+            <div class="featured-ingredients__body">
+              {%- if item_title != blank -%}
+                <h3 class="featured-ingredients__title">{{ item_title | escape }}</h3>
+              {%- endif -%}
+              {%- if item_description != blank -%}
+                <p class="featured-ingredients__description">{{ item_description | escape | newline_to_br }}</p>
+              {%- endif -%}
+            </div>
+          </li>
+        {%- endfor -%}
+      </ul>
+
+      {%- if button_label != blank -%}
+        <div class="featured-ingredients__cta">
+          <a
+            href="{{ button_url | default: '#' }}"
+            class="featured-ingredients__button"
+            data-ingredients-modal-trigger
+          >
+            <span>{{ button_label | escape }}</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </a>
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  .featured-ingredients {
+    position: relative;
+    grid-column: 1 / -1;
+    width: 100%;
+    padding-block: 40px;
+    isolation: isolate;
+  }
+
+  /* Full-bleed background, even inside a constrained grid */
+  .featured-ingredients::before {
+    content: '';
+    position: absolute;
+    inset-block: 0;
+    left: 50%;
+    width: 100vw;
+    transform: translateX(-50%);
+    background-color: #F2FBF7;
+    z-index: -1;
+  }
+
+  .featured-ingredients__heading {
+    margin: 0 0 32px;
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1.2;
+    text-align: center;
+    color: #0E3B2E;
+  }
+
+  .featured-ingredients__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .featured-ingredients__card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid #BFE3D6;
+    border-radius: 12px;
+    background: #fff;
+  }
+
+  .featured-ingredients__media {
+    position: relative;
+    aspect-ratio: 3 / 2;
+    background: #BFE3D6;
+    overflow: hidden;
+  }
+
+  .featured-ingredients__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .featured-ingredients__tag {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    max-width: calc(100% - 24px);
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.4;
+    color: #0E3B2E;
+  }
+
+  .featured-ingredients__body {
+    padding: 16px;
+  }
+
+  .featured-ingredients__title {
+    margin: 0 0 8px;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.3;
+    color: #0E3B2E;
+  }
+
+  .featured-ingredients__description {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #333;
+  }
+
+  .featured-ingredients__cta {
+    display: flex;
+    justify-content: center;
+    margin-top: 32px;
+  }
+
+  .featured-ingredients__button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 28px;
+    border: 1px solid #E0715A;
+    border-radius: 999px;
+    background: #FFF4F1;
+    font-size: 14px;
+    font-weight: 600;
+    color: #B42318;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+  }
+
+  .featured-ingredients__button:hover {
+    background: #FFF4F1;
+  }
+
+  @media screen and (min-width: 768px) {
+    .featured-ingredients {
+      padding-block: 60px;
+    }
+
+    .featured-ingredients__heading {
+      font-size: 30px;
+    }
+
+    .featured-ingredients__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 24px;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  document.addEventListener('click', (event) => {
+    const trigger = event.target.closest('[data-ingredients-modal-trigger]');
+    if (!trigger) return;
+
+    // Reuse the opener of the existing ingredients modal (product-info-tabs block),
+    // so it keeps its scroll lock and focus handling.
+    const opener = document.querySelector('[data-pdp-modal-open]');
+    if (!opener) return;
+
+    event.preventDefault();
+    opener.click();
+  });
+{% endjavascript %}

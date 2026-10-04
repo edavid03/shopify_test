@@ -1,0 +1,283 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */{
+  "type": "footer",
+  "name": "t:names.footer",
+  "sections": {
+    "footer_m9NzUG": {
+      "type": "footer",
+      "blocks": {
+        "group_H6VpwJ": {
+          "type": "group",
+          "settings": {
+            "content_direction": "column",
+            "vertical_on_mobile": true,
+            "horizontal_alignment": "flex-start",
+            "vertical_alignment": "center",
+            "align_baseline": false,
+            "horizontal_alignment_flex_direction_column": "flex-start",
+            "vertical_alignment_flex_direction_column": "center",
+            "gap": 6,
+            "width": "fill",
+            "custom_width": 100,
+            "width_mobile": "fill",
+            "custom_width_mobile": 100,
+            "height": "fit",
+            "custom_height": 100,
+            "background_media": "none",
+            "video_position": "cover",
+            "background_image_position": "cover",
+            "border": "none",
+            "border_width": 1,
+            "border_opacity": 100,
+            "border_radius": 0,
+            "toggle_overlay": false,
+            "overlay_color": "#00000026",
+            "overlay_style": "solid",
+            "gradient_direction": "to top",
+            "open_in_new_tab": false,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {
+            "text_LWt8Pz": {
+              "type": "text",
+              "settings": {
+                "text": "<h2>Join our email list</h2>",
+                "width": "100%",
+                "max_width": "normal",
+                "alignment": "left",
+                "type_preset": "h4",
+                "font": "var(--font-body--family)",
+                "font_size": "1rem",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "wrap": "pretty",
+                "background": false,
+                "background_color": "#00000026",
+                "corner_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "text_f9CFLH": {
+              "type": "text",
+              "settings": {
+                "text": "<p>Get exclusive deals and early access to new products.</p>",
+                "width": "100%",
+                "max_width": "normal",
+                "alignment": "left",
+                "type_preset": "rte",
+                "font": "var(--font-body--family)",
+                "font_size": "1rem",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "wrap": "pretty",
+                "background": false,
+                "background_color": "#00000026",
+                "corner_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "text_LWt8Pz",
+            "text_f9CFLH"
+          ]
+        },
+        "email_signup_crihX7": {
+          "type": "email-signup",
+          "settings": {
+            "width": "fill",
+            "custom_width": 100,
+            "heading_preset": "h3",
+            "border_style": "all",
+            "input_style": "custom",
+            "border_width": 1,
+            "border_radius": 100,
+            "input_background_color": "{{ settings.color_palette.background }}",
+            "input_text_color": "{{ settings.color_palette.color1 }}",
+            "input_border_color": "{{ settings.color_palette.color2 }}",
+            "input_type_preset": "paragraph",
+            "style_class": "button-unstyled",
+            "display_type": "arrow",
+            "label": "Sign up",
+            "integrated_button": true,
+            "button_type_preset": "paragraph",
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "group_H6VpwJ",
+        "email_signup_crihX7"
+      ],
+      "name": "t:names.footer",
+      "settings": {
+        "section_width": "page-width",
+        "gap": 20,
+        "background_color": "{{ settings.color_palette.background }}",
+        "padding-block-start": 30,
+        "padding-block-end": 30
+      },
+      "disabled": true
+    },
+    "footer_utilities_jLGE8U": {
+      "type": "footer-utilities",
+      "blocks": {
+        "footer_copyright_jweRK8": {
+          "type": "footer-copyright",
+          "settings": {
+            "show_powered_by": true,
+            "font_size": "0.75rem",
+            "case": "none"
+          },
+          "blocks": {}
+        },
+        "footer_policy_list_VCdnpa": {
+          "type": "footer-policy-list",
+          "settings": {
+            "font_size": "0.75rem",
+            "case": "none"
+          },
+          "blocks": {}
+        },
+        "social_links_Ew63Kq": {
+          "type": "social-links",
+          "settings": {
+            "facebook_url": "https://www.facebook.com/",
+            "instagram_url": "https://www.instagram.com/",
+            "youtube_url": "https://www.youtube.com/",
+            "tiktok_url": "https://www.tiktok.com/",
+            "twitter_url": "https://x.com/"
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "footer_copyright_jweRK8",
+        "footer_policy_list_VCdnpa",
+        "social_links_Ew63Kq"
+      ],
+      "name": "t:names.utilities",
+      "settings": {
+        "section_width": "page-width",
+        "gap": 24,
+        "divider_thickness": 1,
+        "divider_color": "#2C5A4B",
+        "background_color": "#0E3B2E",
+        "padding-block-start": 20,
+        "padding-block-end": 48
+      },
+      "disabled": true
+    },
+    "footer_pdp": {
+      "type": "footer-pdp",
+      "blocks": {
+        "info_1": {
+          "type": "info",
+          "settings": {
+            "icon": "headset",
+            "title": "Apoyo",
+            "text": "Disponible los 7 días de la semana."
+          }
+        },
+        "info_2": {
+          "type": "info",
+          "settings": {
+            "icon": "clock",
+            "title": "Disponibilidad",
+            "text": "De lunes a domingo · 07:00 - 22:30"
+          }
+        },
+        "info_3": {
+          "type": "info",
+          "settings": {
+            "icon": "hourglass",
+            "title": "Tiempo de respuesta",
+            "text": "Normalmente, la respuesta se obtiene en 1-2 horas."
+          }
+        },
+        "badge_1": {
+          "type": "badge",
+          "settings": {
+            "title": "8,5",
+            "subtitle": "Opiniones verificadas"
+          }
+        },
+        "badge_2": {
+          "type": "badge",
+          "settings": {
+            "title": "Mejor producto del año",
+            "subtitle": "2026-2027"
+          }
+        },
+        "badge_3": {
+          "type": "badge",
+          "settings": {
+            "title": "Mejor producto del año",
+            "subtitle": "2024-2025"
+          }
+        },
+        "badge_4": {
+          "type": "badge",
+          "settings": {
+            "title": "Premio de calidad",
+            "subtitle": "2025"
+          }
+        }
+      },
+      "block_order": [
+        "info_1",
+        "info_2",
+        "info_3",
+        "badge_1",
+        "badge_2",
+        "badge_3",
+        "badge_4"
+      ],
+      "settings": {
+        "col_1_title": "Comercio",
+        "col_1_items": "Todos los productos\nLos más vendidos\nPerro grande (+20 kg)\nPaquetes con descuento\nCrea un paquete de beneficios",
+        "col_2_title": "Apoyo",
+        "col_2_items": "Contacto\nPolítica de envío y devoluciones\nPreguntas frecuentes\nSolicitud de retirada",
+        "col_3_title": "Suministro para perros",
+        "col_3_items": "Sobre nosotros\nDónde comprar\nBlog\nConviértete en un punto de venta",
+        "facebook_url": "#",
+        "instagram_url": "#",
+        "linkedin_url": "#",
+        "tiktok_url": "#",
+        "disclaimer": "La información de este sitio no sustituye el consejo médico o veterinario profesional. Este producto no está diseñado para diagnosticar, tratar, curar ni prevenir enfermedades. Si su mascota tiene una afección médica o sospecha que la tiene, le recomendamos encarecidamente que consulte a su veterinario. Las afecciones médicas solo pueden ser diagnosticadas por un veterinario autorizado. Los resultados pueden variar. No apto para el consumo humano. Consulte a su veterinario ante cualquier cambio en el tratamiento o la suplementación.",
+        "whatsapp": "+00 000 000 000",
+        "help_email": "soporte@tutienda.com",
+        "extra_payments": "iDEAL\nBancontact\nMastercard\nMaestro\nVisa\nAmerican Express\nKlarna\nApple Pay\nGoogle Pay\nBizum\nSEPA"
+      }
+    }
+  },
+  "order": [
+    "footer_pdp",
+    "footer_m9NzUG",
+    "footer_utilities_jLGE8U"
+  ]
+}

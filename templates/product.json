@@ -1,0 +1,862 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */{
+  "sections": {
+    "main": {
+      "type": "product-information",
+      "blocks": {
+        "disclosures_g9mWze": {
+          "type": "disclosures",
+          "name": "t:names.disclosures",
+          "settings": {
+            "heading": "Disclosures",
+            "heading_preset": "h5",
+            "open_by_default": false,
+            "icon": "caret",
+            "disclosure_heading_preset": "h6",
+            "text_color": "",
+            "dividers": true,
+            "divider_color": "{{ settings.color_palette.color2 }}",
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        },
+        "media-gallery": {
+          "type": "_product-media-gallery",
+          "static": true,
+          "settings": {
+            "media_presentation": "carousel",
+            "media_columns": "two",
+            "image_gap": 4,
+            "large_first_image": false,
+            "slideshow_controls_style": "thumbnails",
+            "slideshow_mobile_controls_style": "dots",
+            "thumbnail_position": "bottom",
+            "thumbnail_width": 64,
+            "thumbnail_radius": 8,
+            "aspect_ratio": "adapt",
+            "constrain_to_viewport": true,
+            "media_fit": "contain",
+            "media_radius": 16,
+            "extend_media": false,
+            "zoom": true,
+            "video_loop": false,
+            "hide_variants": true,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        },
+        "product-details": {
+          "type": "_product-details",
+          "static": true,
+          "settings": {
+            "width": "fill",
+            "custom_width": 100,
+            "width_mobile": "fill",
+            "custom_width_mobile": 100,
+            "height": "fit",
+            "details_position": "flex-start",
+            "gap": 28,
+            "sticky_details_desktop": true,
+            "background_media": "none",
+            "background_color": "",
+            "video_position": "cover",
+            "background_image_position": "cover",
+            "border": "none",
+            "border_width": 1,
+            "border_opacity": 100,
+            "border_color": "",
+            "border_radius": 0,
+            "padding-block-start": 24,
+            "padding-block-end": 24,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {
+            "product_badges_dental": {
+              "type": "product-badges",
+              "settings": {},
+              "blocks": {}
+            },
+            "group_icgrde": {
+              "type": "group",
+              "name": "t:names.header",
+              "settings": {
+                "content_direction": "column",
+                "vertical_on_mobile": true,
+                "horizontal_alignment": "flex-start",
+                "vertical_alignment": "center",
+                "align_baseline": false,
+                "horizontal_alignment_flex_direction_column": "flex-start",
+                "vertical_alignment_flex_direction_column": "center",
+                "gap": 12,
+                "width": "fill",
+                "custom_width": 100,
+                "width_mobile": "fill",
+                "custom_width_mobile": 100,
+                "height": "fit",
+                "custom_height": 100,
+                "background_media": "none",
+                "background_color": "",
+                "video_position": "cover",
+                "background_image_position": "cover",
+                "toggle_overlay": false,
+                "overlay_color": "#00000026",
+                "overlay_style": "solid",
+                "gradient_direction": "to top",
+                "border": "none",
+                "border_width": 1,
+                "border_opacity": 100,
+                "border_color": "",
+                "border_radius": 0,
+                "open_in_new_tab": false,
+                "placeholder": "",
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {
+                "text_xrnftG": {
+                  "type": "text",
+                  "name": "t:names.product_title",
+                  "settings": {
+                    "text": "<h1>{{ closest.product.metafields.custom.title.value }}</h1>",
+                    "width": "100%",
+                    "max_width": "normal",
+                    "alignment": "left",
+                    "type_preset": "h3",
+                    "font": "var(--font-body--family)",
+                    "font_size": "1rem",
+                    "line_height": "tight",
+                    "letter_spacing": "normal",
+                    "case": "none",
+                    "wrap": "pretty",
+                    "text_color": "",
+                    "background": false,
+                    "background_color": "#00000026",
+                    "corner_radius": 0,
+                    "padding-block-start": 0,
+                    "padding-block-end": 0,
+                    "padding-inline-start": 0,
+                    "padding-inline-end": 0
+                  },
+                  "blocks": {}
+                },
+                "product_subtitle_dental": {
+                  "type": "product-subtitle",
+                  "settings": {},
+                  "blocks": {}
+                },
+                "product_reviews_dental": {
+                  "type": "product-reviews",
+                  "settings": {
+                    "rating": 5,
+                    "review_count": "18.618",
+                    "intro_label": "Ver nuestras",
+                    "outro_label": "reseñas en",
+                    "platform_label": "Trustpilot",
+                    "rating_color": "#00A06B"
+                  },
+                  "blocks": {}
+                },
+                "price_tVjtKg": {
+                  "type": "price",
+                  "settings": {
+                    "show_sale_price_first": true,
+                    "show_installments": false,
+                    "show_tax_info": false,
+                    "type_preset": "paragraph",
+                    "width": "100%",
+                    "alignment": "left",
+                    "font": "var(--font-body--family)",
+                    "font_size": "1rem",
+                    "line_height": "normal",
+                    "letter_spacing": "normal",
+                    "case": "none",
+                    "text_color": "",
+                    "padding-block-start": 4,
+                    "padding-block-end": 0,
+                    "padding-inline-start": 0,
+                    "padding-inline-end": 0
+                  },
+                  "blocks": {}
+                }
+              },
+              "block_order": [
+                "text_xrnftG",
+                "product_subtitle_dental",
+                "product_reviews_dental",
+                "price_tVjtKg"
+              ]
+            },
+            "product_info_tabs_dental": {
+              "type": "product-info-tabs",
+              "settings": {},
+              "blocks": {}
+            },
+            "group_buybox": {
+              "type": "group",
+              "name": "Caja de compra",
+              "settings": {
+                "content_direction": "column",
+                "vertical_on_mobile": true,
+                "horizontal_alignment": "flex-start",
+                "vertical_alignment": "center",
+                "align_baseline": false,
+                "horizontal_alignment_flex_direction_column": "flex-start",
+                "vertical_alignment_flex_direction_column": "center",
+                "gap": 18,
+                "width": "fill",
+                "custom_width": 100,
+                "width_mobile": "fill",
+                "custom_width_mobile": 100,
+                "height": "fit",
+                "custom_height": 100,
+                "background_media": "none",
+                "background_color": "#FFFFFF",
+                "video_position": "cover",
+                "background_image_position": "cover",
+                "toggle_overlay": false,
+                "overlay_color": "#00000026",
+                "overlay_style": "solid",
+                "gradient_direction": "to top",
+                "border": "solid",
+                "border_width": 6,
+                "border_opacity": 100,
+                "border_color": "#F3F4F3",
+                "border_radius": 12,
+                "open_in_new_tab": false,
+                "placeholder": "",
+                "padding-block-start": 18,
+                "padding-block-end": 18,
+                "padding-inline-start": 20,
+                "padding-inline-end": 20
+              },
+              "blocks": {
+                "variant_picker_R3rGDr": {
+                  "type": "variant-picker",
+                  "settings": {
+                    "variant_style": "buttons",
+                    "show_swatches": false,
+                    "option_label_text_color": "",
+                    "variant_style_class": "default",
+                    "custom_variant_background": "#ffffff",
+                    "custom_variant_text": "#0E3B2E",
+                    "custom_variant_border": "#D5DED9",
+                    "selected_variant_style_class": "custom",
+                    "custom_selected_variant_background": "#E8F5EF",
+                    "custom_selected_variant_text": "#0E3B2E",
+                    "custom_selected_variant_border": "#1E6B4F",
+                    "alignment": "left",
+                    "padding-block-start": 0,
+                    "padding-block-end": 0,
+                    "padding-inline-start": 0,
+                    "padding-inline-end": 0
+                  },
+                  "blocks": {}
+                },
+                "buy_buttons_eYQEYi": {
+                  "type": "buy-buttons",
+                  "settings": {
+                    "stacking": true,
+                    "text_color": "",
+                    "show_pickup_availability": false,
+                    "gift_card_form": true,
+                    "recipient_button_style": "default",
+                    "recipient_button_background": "{{ settings.color_palette.background }}",
+                    "recipient_button_text": "{{ settings.color_palette.foreground }}",
+                    "recipient_button_border": "{{ settings.color_palette.foreground }}",
+                    "selected_recipient_button_style": "default",
+                    "selected_recipient_button_background": "{{ settings.color_palette.foreground }}",
+                    "selected_recipient_button_text": "{{ settings.color_palette.background }}",
+                    "selected_recipient_button_border": "{{ settings.color_palette.foreground }}",
+                    "input_style": "default",
+                    "input_background_color": "{{ settings.color_palette.background }}",
+                    "input_text_color": "{{ settings.color_palette.foreground }}",
+                    "input_border_color": "{{ settings.color_palette.foreground }}",
+                    "border_width": 1,
+                    "border_radius": 8,
+                    "padding-block-start": 0,
+                    "padding-block-end": 0,
+                    "padding-inline-start": 0,
+                    "padding-inline-end": 0
+                  },
+                  "blocks": {
+                    "quantity": {
+                      "type": "quantity",
+                      "static": true,
+                      "settings": {
+                        "input_style": "default",
+                        "input_background_color": "{{ settings.color_palette.background }}",
+                        "input_text_color": "{{ settings.color_palette.foreground }}",
+                        "input_border_color": "#D5DED9",
+                        "border_width": 1,
+                        "border_radius": 8
+                      },
+                      "blocks": {}
+                    },
+                    "add-to-cart": {
+                      "type": "add-to-cart",
+                      "static": true,
+                      "settings": {
+                        "style_class": "button-custom",
+                        "custom_button_background": "#1A7F56",
+                        "custom_button_text": "#ffffff",
+                        "custom_button_border": "#1A7F56"
+                      },
+                      "blocks": {}
+                    },
+                    "accelerated-checkout": {
+                      "type": "accelerated-checkout",
+                      "static": true,
+                      "settings": {},
+                      "blocks": {}
+                    }
+                  },
+                  "block_order": []
+                },
+                "usp_grid_dental": {
+                  "type": "product-usp-grid",
+                  "settings": {},
+                  "blocks": {}
+                },
+                "pdp_buy_tip": {
+                  "type": "pdp-buy-tip",
+                  "settings": {}
+                },
+                "pdp_step_1": {
+                  "type": "pdp-step-label",
+                  "settings": {
+                    "number": 1,
+                    "label": "Peso de tu perro",
+                    "hide_without_variants": true
+                  }
+                },
+                "pdp_step_2": {
+                  "type": "pdp-step-label",
+                  "settings": {
+                    "number": 2,
+                    "label": "Elige la cantidad",
+                    "hide_without_variants": true
+                  }
+                }
+              },
+              "block_order": [
+                "pdp_buy_tip",
+                "pdp_step_1",
+                "variant_picker_R3rGDr",
+                "pdp_step_2",
+                "buy_buttons_eYQEYi",
+                "usp_grid_dental"
+              ]
+            },
+            "text_aEtTtq": {
+              "type": "text",
+              "name": "t:names.product_description",
+              "settings": {
+                "text": "{{ closest.product.description }}",
+                "width": "100%",
+                "max_width": "normal",
+                "alignment": "left",
+                "type_preset": "rte",
+                "font": "var(--font-body--family)",
+                "font_size": "1rem",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "wrap": "pretty",
+                "text_color": "",
+                "background": false,
+                "background_color": "#00000026",
+                "corner_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "product_accordion_dental": {
+              "type": "product-accordion",
+              "settings": {
+                "single_open": false
+              },
+              "blocks": {}
+            },
+            "product_video_gallery_dental": {
+              "type": "product-video-gallery",
+              "settings": {},
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "product_badges_dental",
+            "group_icgrde",
+            "product_info_tabs_dental",
+            "group_buybox",
+            "text_aEtTtq",
+            "product_accordion_dental",
+            "product_video_gallery_dental"
+          ]
+        }
+      },
+      "block_order": [
+        "disclosures_g9mWze"
+      ],
+      "settings": {
+        "content_width": "content-center-aligned",
+        "desktop_media_position": "left",
+        "equal_columns": false,
+        "limit_details_width": false,
+        "gap": 48,
+        "enable_sticky_add_to_cart": true,
+        "background_color": "{{ settings.color_palette.background }}",
+        "padding-block-start": 0,
+        "padding-block-end": 0
+      },
+      "disabled": true
+    },
+    "marquee_banner": {
+      "type": "product-marquee-banner",
+      "settings": {
+        "speed": 150
+      },
+      "disabled": true
+    },
+    "first_information": {
+      "type": "product-first-information",
+      "settings": {},
+      "disabled": true
+    },
+    "product_benefits": {
+      "type": "product-benefits",
+      "settings": {}
+    },
+    "featured_ingredients": {
+      "type": "product-featured-ingredients",
+      "settings": {
+        "heading": "¿Qué contiene este producto?",
+        "button_label": "Ver todos los ingredientes"
+      },
+      "disabled": true
+    },
+    "professional_recommendations": {
+      "type": "product-professional-recommendations",
+      "settings": {}
+    },
+    "comparison_table": {
+      "type": "product-comparison-table",
+      "settings": {},
+      "disabled": true
+    },
+    "faqs": {
+      "type": "product-faqs",
+      "settings": {}
+    },
+    "product_recommendations_qggXJq": {
+      "type": "product-recommendations",
+      "blocks": {
+        "text_cbcgyb": {
+          "type": "text",
+          "name": "t:names.header",
+          "settings": {
+            "text": "<h3>You may also like </h3>",
+            "width": "fit-content",
+            "max_width": "normal",
+            "alignment": "left",
+            "type_preset": "h4",
+            "font": "var(--font-body--family)",
+            "font_size": "1rem",
+            "line_height": "normal",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "pretty",
+            "text_color": "",
+            "background": false,
+            "background_color": "#00000026",
+            "corner_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        },
+        "static-product-card": {
+          "type": "_product-card",
+          "name": "t:names.product_card",
+          "static": true,
+          "settings": {
+            "product_card_gap": 8,
+            "background_color": "",
+            "border": "none",
+            "border_width": 1,
+            "border_opacity": 100,
+            "border_color": "",
+            "border_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 8,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {
+            "product_card_gallery_DNizbJ": {
+              "type": "_product-card-gallery",
+              "name": "t:names.product_card_media",
+              "settings": {
+                "image_ratio": "adapt",
+                "border": "none",
+                "border_width": 1,
+                "border_opacity": 100,
+                "border_color": "",
+                "border_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "product_title_M7MJkb": {
+              "type": "product-title",
+              "name": "t:names.product_title",
+              "settings": {
+                "width": "100%",
+                "max_width": "normal",
+                "alignment": "left",
+                "type_preset": "rte",
+                "font": "var(--font-body--family)",
+                "font_size": "1rem",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "wrap": "pretty",
+                "text_color": "",
+                "background": false,
+                "background_color": "#00000026",
+                "corner_radius": 0,
+                "padding-block-start": 4,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "price_gLWgA6": {
+              "type": "price",
+              "settings": {
+                "show_sale_price_first": true,
+                "show_installments": false,
+                "show_tax_info": false,
+                "type_preset": "h6",
+                "width": "100%",
+                "alignment": "left",
+                "font": "var(--font-body--family)",
+                "font_size": "1rem",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "text_color": "",
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "product_card_gallery_DNizbJ",
+            "product_title_M7MJkb",
+            "price_gLWgA6"
+          ]
+        }
+      },
+      "block_order": [
+        "text_cbcgyb"
+      ],
+      "name": "t:names.product_recommendations",
+      "settings": {
+        "product": "{{ closest.product }}",
+        "recommendation_type": "related",
+        "layout_type": "grid",
+        "carousel_on_mobile": false,
+        "max_products": 4,
+        "columns": 4,
+        "mobile_columns": "2",
+        "columns_gap": 12,
+        "rows_gap": 24,
+        "icons_style": "arrow",
+        "icons_shape": "none",
+        "section_width": "page-width",
+        "gap": 28,
+        "background_color": "{{ settings.color_palette.background }}",
+        "padding-block-start": 48,
+        "padding-block-end": 48
+      }
+    },
+    "lienzo": {
+      "type": "pdp-lienzo",
+      "blocks": {
+        "faq_1": {
+          "type": "faq",
+          "settings": {
+            "question": "¿Reconoces esto en tu perro?",
+            "answer": "<p>Muchos dueños ven o huelen una o más de estas señales en su perro:</p><ul><li>Mal aliento</li><li>Manchas amarillas o placa visible</li><li>Encías que requieren atención</li><li>Menos apetito por croquetas duras o snacks</li><li>Rechazo a que le toquen la boca</li></ul>"
+          }
+        },
+        "faq_2": {
+          "type": "faq",
+          "settings": {
+            "question": "¿Cómo funciona Dental Bright?",
+            "answer": "<p>Actúa a la vez para refrescar el aliento, prevenir la placa, mantener las encías sanas y la flora bucal. Todo en un solo paso diario, sobre la comida.</p><p><strong>1. Aliento fresco:</strong> se nota en muchos perros en 7 días gracias a la menta y el eucalipto.</p><p><strong>2. Prevención de la placa:</strong> desde la tercera semana. Las algas pardas estimulan la saliva y ablandan la placa.</p><p><strong>3. Encías sanas:</strong> mejora gradual en los primeros meses gracias al romero.</p><p><strong>4. Flora oral saludable:</strong> en dos o tres meses, con el complejo pre, pro y postbiótico.</p>"
+          }
+        },
+        "faq_3": {
+          "type": "faq",
+          "settings": {
+            "question": "¿Cuándo verás los resultados?",
+            "answer": "<p>El aliento suele mejorar en la primera semana; la placa y las encías, a lo largo de los primeros meses.</p>"
+          }
+        },
+        "faq_4": {
+          "type": "faq",
+          "settings": {
+            "question": "¿Es seguro para mi perro?",
+            "answer": "<p>Ingredientes 100% naturales, sin gluten ni cereales. Se puede combinar con otros suplementos.</p>"
+          }
+        },
+        "faq_5": {
+          "type": "faq",
+          "settings": {
+            "question": "Garantía de devolución de 60 días",
+            "answer": "<p>Pruébalo 60 días. ¿No notas diferencia? Escríbenos y gestionamos un reembolso. Válido para tu primer pedido.</p>"
+          }
+        },
+        "ingredient_6": {
+          "type": "ingredient",
+          "settings": {
+            "tag": "Prevención de la placa",
+            "name": "Algas pardas",
+            "short": "Estimulan la saliva y ayudan a ablandar la placa antes de que se endurezca.",
+            "description": "Estimulan la producción de saliva, que ablanda la placa antes de que se convierta en sarro."
+          }
+        },
+        "ingredient_7": {
+          "type": "ingredient",
+          "settings": {
+            "tag": "Flora oral",
+            "name": "Complejo probiótico",
+            "short": "Favorece el equilibrio bacteriano para una flora oral saludable.",
+            "description": "Prebióticos, probióticos y postbióticos para el equilibrio bacteriano de la boca."
+          }
+        },
+        "ingredient_8": {
+          "type": "ingredient",
+          "settings": {
+            "tag": "Aliento fresco",
+            "name": "Romero",
+            "short": "Contribuye a un aliento fresco y a unas encías sanas.",
+            "description": "Hierba natural que contribuye a un aliento fresco y a unas encías sanas."
+          }
+        }
+      },
+      "block_order": [
+        "faq_1",
+        "faq_2",
+        "faq_3",
+        "faq_4",
+        "faq_5",
+        "ingredient_6",
+        "ingredient_7",
+        "ingredient_8"
+      ],
+      "settings": {
+        "part": "hero"
+      }
+    },
+    "lienzo_chart": {
+      "type": "pdp-lienzo",
+      "blocks": {},
+      "block_order": [],
+      "settings": {
+        "part": "chart"
+      }
+    },
+    "lienzo_ingredients": {
+      "type": "pdp-lienzo",
+      "blocks": {
+        "ingredient_6": {
+          "type": "ingredient",
+          "settings": {
+            "tag": "Prevención de la placa",
+            "name": "Algas pardas",
+            "short": "Estimulan la saliva y ayudan a ablandar la placa antes de que se endurezca.",
+            "description": "Estimulan la producción de saliva, que ablanda la placa antes de que se convierta en sarro."
+          }
+        },
+        "ingredient_7": {
+          "type": "ingredient",
+          "settings": {
+            "tag": "Flora oral",
+            "name": "Complejo probiótico",
+            "short": "Favorece el equilibrio bacteriano para una flora oral saludable.",
+            "description": "Prebióticos, probióticos y postbióticos para el equilibrio bacteriano de la boca."
+          }
+        },
+        "ingredient_8": {
+          "type": "ingredient",
+          "settings": {
+            "tag": "Aliento fresco",
+            "name": "Romero",
+            "short": "Contribuye a un aliento fresco y a unas encías sanas.",
+            "description": "Hierba natural que contribuye a un aliento fresco y a unas encías sanas."
+          }
+        }
+      },
+      "block_order": [
+        "ingredient_6",
+        "ingredient_7",
+        "ingredient_8"
+      ],
+      "settings": {
+        "part": "ingredients"
+      }
+    },
+    "lienzo_trust": {
+      "type": "pdp-lienzo",
+      "blocks": {
+        "trust_9": {
+          "type": "trust",
+          "settings": {
+            "text": "Hecho en Bélgica"
+          }
+        },
+        "trust_10": {
+          "type": "trust",
+          "settings": {
+            "text": "100% natural"
+          }
+        },
+        "trust_11": {
+          "type": "trust",
+          "settings": {
+            "text": "Sin gluten ni cereales"
+          }
+        },
+        "trust_12": {
+          "type": "trust",
+          "settings": {
+            "text": "Aprobado por veterinarios"
+          }
+        },
+        "trust_13": {
+          "type": "trust",
+          "settings": {
+            "text": "200.000 clientes satisfechos"
+          }
+        }
+      },
+      "block_order": [
+        "trust_9",
+        "trust_10",
+        "trust_11",
+        "trust_12",
+        "trust_13"
+      ],
+      "settings": {
+        "part": "trust",
+        "trust_respect_motion": false
+      }
+    },
+    "lienzo_compare": {
+      "type": "pdp-lienzo",
+      "blocks": {
+        "compare_row_14": {
+          "type": "compare_row",
+          "settings": {
+            "feature": "Aliento más fresco",
+            "us": "Menta y eucalipto",
+            "a": "No es el objetivo",
+            "b": "Temporal"
+          }
+        },
+        "compare_row_15": {
+          "type": "compare_row",
+          "settings": {
+            "feature": "Prevención de la placa",
+            "us": "Algas pardas",
+            "a": "Más lento",
+            "b": "No"
+          }
+        },
+        "compare_row_16": {
+          "type": "compare_row",
+          "settings": {
+            "feature": "Encías sanas",
+            "us": "Romero y bióticos",
+            "a": "No",
+            "b": "No"
+          }
+        },
+        "compare_row_17": {
+          "type": "compare_row",
+          "settings": {
+            "feature": "Flora oral saludable",
+            "us": "Pre, pro y postbióticos",
+            "a": "Sin probióticos",
+            "b": "Sin probióticos"
+          }
+        },
+        "compare_row_18": {
+          "type": "compare_row",
+          "settings": {
+            "feature": "Todo en una rutina diaria",
+            "us": "Sí",
+            "a": "Sí",
+            "b": "El perro debe masticar"
+          }
+        }
+      },
+      "block_order": [
+        "compare_row_14",
+        "compare_row_15",
+        "compare_row_16",
+        "compare_row_17",
+        "compare_row_18"
+      ],
+      "settings": {
+        "part": "compare"
+      }
+    }
+  },
+  "order": [
+    "lienzo",
+    "lienzo_chart",
+    "product_benefits",
+    "professional_recommendations",
+    "lienzo_ingredients",
+    "lienzo_trust",
+    "lienzo_compare",
+    "faqs",
+    "main",
+    "first_information",
+    "featured_ingredients",
+    "marquee_banner",
+    "comparison_table",
+    "product_recommendations_qggXJq"
+  ]
+}

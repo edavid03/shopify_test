@@ -1,0 +1,1010 @@
+{%- liquid
+  assign target_product = closest.product | default: product
+-%}
+
+<div
+  class="pdp-info-tabs-block"
+  style="
+    --pdp-green: {{ block.settings.color_primary }};
+    --pdp-tab-active: {{ block.settings.color_tab_active }};
+    --pdp-surface: {{ block.settings.color_surface }};
+    --pdp-accent: {{ block.settings.color_accent }};
+    --pdp-check: {{ block.settings.color_check }};
+  "
+  {{ block.shopify_attributes }}
+>
+  {% render 'product-info-tabs',
+    product: target_product,
+    settings: block.settings,
+    uid: block.id
+  %}
+</div>
+
+{% stylesheet %}
+  .pdp-info-tabs-block {
+    width: 100%;
+  }
+
+  /* Ficha de producto: la foto sale hacia el borde izquierdo y la columna de
+     información gana el espacio liberado. Se antepone .product-information para
+     superar la especificidad de las reglas de columnas del tema. */
+  @media screen and (min-width: 750px) {
+    .product-information
+      .product-information__grid:not(.product-information--media-none).product-information--media-left {
+      grid-column: 1 / -1;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      width: min(100% - 48px, 1240px);
+      margin-inline: auto;
+    }
+
+    .product-information
+      .product-information__grid:not(.product-information--media-none).product-information--media-left
+      .product-information__media {
+      padding-inline: 0 20px;
+      position: sticky;
+      top: calc(var(--header-height, 0px) + 16px);
+      align-self: start;
+    }
+
+    .product-information
+      .product-information__grid:not(.product-information--media-none).product-information--media-left
+      .product-details {
+      padding-inline: 20px 0;
+    }
+  }
+
+  .pdp-info-tabs {
+    --pdp-green: #0E3B2E;
+    --pdp-tab-active: #1E8A5E;
+    --pdp-surface: #f7f9f8;
+    --pdp-accent: #E0715A;
+    --pdp-check: #1E8A5E;
+    --pdp-text: #333333;
+    --pdp-muted: #6e6e6e;
+    --pdp-border: #E5ECE8;
+    --pdp-white: #ffffff;
+    --pdp-radius-md: 12px;
+    --pdp-radius-lg: 16px;
+    --pdp-radius-pill: 999px;
+    --pdp-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+
+    /* Named container: the details column stays narrow even on desktop, so every
+       layout change below keys off this block's own width, not the viewport. */
+    container: pdp / inline-size;
+    box-sizing: border-box;
+    width: 100%;
+    color: var(--pdp-text);
+    font-size: 15px;
+    line-height: 1.55;
+  }
+
+  .pdp-info-tabs *,
+  .pdp-info-tabs *::before,
+  .pdp-info-tabs *::after {
+    box-sizing: border-box;
+  }
+
+  .pdp-info-tabs__placeholder {
+    margin: 0;
+    padding: 16px;
+    border: 1px dashed var(--pdp-border, #E5ECE8);
+    border-radius: var(--pdp-radius-lg, 16px);
+    background: var(--pdp-surface, #f7f9f8);
+    color: var(--pdp-muted, #55665F);
+    font-size: 14px;
+  }
+
+  /* -------------------------------------------------- Tabs */
+
+  .pdp-tabs {
+    padding: 8px;
+    border-radius: 20px;
+    background: #f4f4f4;
+  }
+
+  .pdp-tabs__list {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+    gap: 0;
+    padding: 0;
+  }
+
+  .pdp-tabs__tab {
+    appearance: none;
+    margin: 0;
+    padding: 16px 8px;
+    border: 0;
+    border-radius: 12px 12px 0 0;
+    background: transparent;
+    color: var(--pdp-muted);
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.2;
+    text-align: center;
+    cursor: pointer;
+    transition: color 0.2s var(--pdp-ease), background-color 0.2s var(--pdp-ease);
+  }
+
+  .pdp-tabs__tab:hover {
+    color: var(--pdp-green);
+  }
+
+  .pdp-tabs__tab:focus-visible {
+    outline: 2px solid var(--pdp-green);
+    outline-offset: 2px;
+  }
+
+  .pdp-tabs__tab[aria-selected='true'] {
+    background: var(--pdp-white);
+    color: var(--pdp-tab-active);
+  }
+
+  .pdp-tabs__panels {
+    border-radius: 0 0 12px 12px;
+    background: var(--pdp-white);
+  }
+
+  .pdp-tabs__panel {
+    padding: 24px;
+  }
+
+  .pdp-tabs__panel[hidden] {
+    display: none;
+  }
+
+  .pdp-tabs__panel:focus-visible {
+    outline: 2px solid var(--pdp-green);
+    outline-offset: -4px;
+  }
+
+  @keyframes pdp-panel-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .pdp-tabs__panel:not([hidden]) {
+    animation: pdp-panel-in 0.28s var(--pdp-ease) both;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pdp-tabs__panel:not([hidden]) {
+      animation: none;
+    }
+  }
+
+  .pdp-ingredients__item:last-child {
+    border-block-end: 0;
+  }
+
+  /* -------------------------------------------------- Ventajas */
+
+  .pdp-benefits {
+    display: grid;
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .pdp-benefits__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+  }
+
+  .pdp-benefits__icon {
+    display: inline-flex;
+    flex: 0 0 auto;
+    margin-block-start: 1px;
+    color: var(--pdp-check);
+  }
+
+  .pdp-icon--check {
+    width: 17px;
+    height: 17px;
+  }
+
+  .pdp-benefits__text {
+    font-size: 15px;
+    line-height: 1.55;
+  }
+
+  /* -------------------------------------------------- Ingredientes */
+
+  .pdp-ingredients__heading {
+    margin: 0 0 20px;
+    color: var(--pdp-text);
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  .pdp-ingredients {
+    display: grid;
+    gap: 20px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .pdp-ingredients__item {
+    display: grid;
+    grid-template-columns: 56px minmax(0, 1fr);
+    align-items: center;
+    gap: 16px;
+  }
+
+  .pdp-ingredients__avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    overflow: hidden;
+    border-radius: 50%;
+    background: #BFE3D6;
+  }
+
+  .pdp-ingredients__avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .pdp-ingredients__avatar-fallback {
+    color: var(--pdp-green);
+    font-size: 19px;
+    font-weight: 700;
+  }
+
+  .pdp-ingredients__name {
+    margin: 0 0 3px;
+    color: var(--pdp-green);
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+
+  .pdp-ingredients__description {
+    margin: 0;
+    color: var(--pdp-text);
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  .pdp-cta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    margin-block-start: 24px;
+    padding: 14px 20px;
+    appearance: none;
+    border: 1px solid var(--pdp-accent);
+    border-radius: var(--pdp-radius-pill);
+    background: color-mix(in srgb, var(--pdp-accent) 5%, white);
+    color: var(--pdp-accent);
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.2;
+    cursor: pointer;
+    transition: background-color 0.2s var(--pdp-ease);
+  }
+
+  .pdp-cta:hover {
+    background: color-mix(in srgb, var(--pdp-accent) 12%, white);
+  }
+
+  .pdp-cta:focus-visible {
+    outline: 2px solid var(--pdp-green);
+    outline-offset: 2px;
+  }
+
+  .pdp-cta .pdp-icon--arrow {
+    flex: 0 0 auto;
+    width: 18px;
+    height: 18px;
+    transition: transform 0.2s var(--pdp-ease);
+  }
+
+  .pdp-cta:hover .pdp-icon--arrow {
+    transform: translateX(15px);
+  }
+
+  /* -------------------------------------------------- Dosificación */
+
+  .pdp-dosage__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-block-end: 10px;
+    border-block-end: 1px solid var(--pdp-border);
+  }
+
+  .pdp-dosage__head-cell {
+    color: var(--pdp-muted);
+    font-size: 13px;
+    font-weight: 400;
+    text-transform: uppercase;
+  }
+
+  .pdp-dosage__rows {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .pdp-dosage__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding-block: 14px;
+    border-block-end: 1px solid var(--pdp-border);
+  }
+
+  .pdp-dosage__rows > .pdp-dosage__row:last-child {
+    border-block-end: 0;
+  }
+
+  .pdp-dosage__weight {
+    color: var(--pdp-text);
+    font-size: 14px;
+    line-height: 1.4;
+  }
+
+  .pdp-dosage__amount {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .pdp-dosage__text {
+    color: var(--pdp-muted);
+    font-size: 13px;
+    line-height: 1.4;
+    white-space: nowrap;
+  }
+
+  .pdp-dosage__scoops {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 4px;
+    color: var(--pdp-muted);
+  }
+
+  .pdp-icon--scoop {
+    width: 22px;
+    height: 22px;
+  }
+
+  .pdp-dosage__button {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 16px;
+    border: 1px solid var(--pdp-accent);
+    border-radius: var(--pdp-radius-pill);
+    background: color-mix(in srgb, var(--pdp-accent) 4%, white);
+    color: var(--pdp-accent);
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.2;
+    text-decoration: none;
+    transition: background-color 0.2s var(--pdp-ease);
+  }
+
+  .pdp-dosage__button:hover {
+    background: color-mix(in srgb, var(--pdp-accent) 12%, white);
+  }
+
+  .pdp-dosage__button:focus-visible {
+    outline: 2px solid var(--pdp-green);
+    outline-offset: 2px;
+  }
+
+  .pdp-dosage__button .pdp-icon--arrow {
+    width: 14px;
+    height: 14px;
+  }
+
+  .pdp-dosage__button--static {
+    border-color: var(--pdp-border);
+    background: var(--pdp-surface);
+    color: var(--pdp-muted);
+  }
+
+  .pdp-tip {
+    margin: 18px 0 0;
+    padding-block-start: 16px;
+    border-block-start: 1px solid var(--pdp-border);
+    color: var(--pdp-muted);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .pdp-tip__label {
+    margin-inline-end: 4px;
+    color: var(--pdp-text);
+    font-weight: 700;
+  }
+
+  /* -------------------------------------------------- Modal (<dialog>) */
+
+  .pdp-modal:not([open]) {
+    display: none;
+  }
+
+  .pdp-modal {
+    /* The top layer ignores ancestor transforms, sticky columns and containment,
+       so the dialog is never clipped by the product details column. */
+    display: flex;
+    flex-direction: column;
+    width: calc(100% - 24px);
+    max-width: 620px;
+    max-height: 88dvh;
+    margin: auto auto 0;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+    border-radius: var(--pdp-radius-lg, 16px) var(--pdp-radius-lg, 16px) 0 0;
+    background: #ffffff;
+    box-shadow: 0 -8px 40px rgba(12, 32, 25, 0.25);
+    color: #243b33;
+    font-size: 15px;
+    line-height: 1.55;
+  }
+
+  .pdp-modal[open] {
+    animation: pdp-modal-in 0.28s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  }
+
+  .pdp-modal::backdrop {
+    background: rgba(12, 32, 25, 0.62);
+  }
+
+  .pdp-modal[open]::backdrop {
+    animation: pdp-fade-in 0.24s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  }
+
+  @keyframes pdp-fade-in {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes pdp-modal-in {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .pdp-modal__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex: 0 0 auto;
+    padding: 18px 18px 14px;
+    border-block-end: 1px solid #E5ECE8;
+  }
+
+  .pdp-modal__title {
+    margin: 0;
+    color: var(--pdp-green, #0E3B2E);
+    font-size: 19px;
+    font-weight: 700;
+    line-height: 1.25;
+  }
+
+  .pdp-modal__close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 38px;
+    height: 38px;
+    appearance: none;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: #f1f4f2;
+    color: var(--pdp-green, #0E3B2E);
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  .pdp-modal__close:hover {
+    background: var(--pdp-green, #0E3B2E);
+    color: #ffffff;
+  }
+
+  .pdp-modal__close:focus-visible {
+    outline: 2px solid var(--pdp-green, #0E3B2E);
+    outline-offset: 2px;
+  }
+
+  .pdp-icon--close {
+    width: 18px;
+    height: 18px;
+  }
+
+  .pdp-modal__body {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 18px;
+  }
+
+  .pdp-modal__rte > :first-child {
+    margin-block-start: 0;
+  }
+
+  .pdp-modal__rte > :last-child {
+    margin-block-end: 0;
+  }
+
+  .pdp-modal__rte h2,
+  .pdp-modal__rte h3,
+  .pdp-modal__rte h4 {
+    margin-block: 20px 8px;
+    color: var(--pdp-green, #0E3B2E);
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+
+  .pdp-modal__rte p {
+    margin-block: 0 12px;
+    font-size: 14px;
+    line-height: 1.65;
+  }
+
+  .pdp-modal__rte ul,
+  .pdp-modal__rte ol {
+    margin-block: 0 12px;
+    padding-inline-start: 20px;
+    font-size: 14px;
+    line-height: 1.65;
+  }
+
+  .pdp-modal__rte li {
+    margin-block-end: 5px;
+  }
+
+  .pdp-modal__rte a {
+    color: var(--pdp-accent, #E0715A);
+    text-underline-offset: 2px;
+  }
+
+  .pdp-modal__footer {
+    flex: 0 0 auto;
+    padding: 16px 18px;
+    border-block-start: 1px solid #E5ECE8;
+    background: #f7f9f8;
+  }
+
+  .pdp-modal__badges {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .pdp-modal__badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 7px;
+    text-align: center;
+  }
+
+  .pdp-modal__badge-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    overflow: hidden;
+    border-radius: 50%;
+    background: #f1f4f2;
+  }
+
+  .pdp-modal__badge-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .pdp-modal__badge-title {
+    color: var(--pdp-green, #0E3B2E);
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.35;
+  }
+
+  /* -------------------------------------------------- Container queries */
+
+  @container pdp (min-width: 420px) {
+    .pdp-ingredients__item {
+      grid-template-columns: 60px minmax(0, 1fr);
+      gap: 16px;
+    }
+
+    .pdp-ingredients__avatar {
+      width: 60px;
+      height: 60px;
+    }
+
+    .pdp-dosage__weight {
+      font-size: 15px;
+    }
+  }
+
+  /* -------------------------------------------------- Modal: viewport-sized */
+
+  @media screen and (min-width: 750px) {
+    .pdp-modal {
+      max-height: 86dvh;
+      margin: auto;
+      border-radius: var(--pdp-radius-lg, 16px);
+      box-shadow: 0 24px 60px rgba(12, 32, 25, 0.3);
+    }
+
+    .pdp-modal__header {
+      padding: 22px 24px 18px;
+    }
+
+    .pdp-modal__title {
+      font-size: 22px;
+    }
+
+    .pdp-modal__body {
+      padding: 24px;
+    }
+
+    .pdp-modal__footer {
+      padding: 20px 24px;
+    }
+
+    .pdp-modal__badge-icon {
+      width: 48px;
+      height: 48px;
+    }
+
+    .pdp-modal__badge-title {
+      font-size: 13px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pdp-info-tabs *,
+    .pdp-modal,
+    .pdp-modal::backdrop,
+    .pdp-modal * {
+      animation-duration: 0.001ms !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  (function () {
+    const ROOT_SELECTOR = '[data-pdp-info-tabs]';
+    const scrollLockOwners = new Set();
+    let savedBodyOverflow = '';
+    let savedBodyPaddingRight = '';
+
+    function lockBodyScroll(owner) {
+      if (scrollLockOwners.size === 0) {
+        const body = document.body;
+        const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+
+        savedBodyOverflow = body.style.overflow;
+        savedBodyPaddingRight = body.style.paddingRight;
+        body.style.overflow = 'hidden';
+
+        if (scrollbarWidth > 0) {
+          const currentPadding = parseFloat(window.getComputedStyle(body).paddingRight) || 0;
+          body.style.paddingRight = currentPadding + scrollbarWidth + 'px';
+        }
+      }
+
+      scrollLockOwners.add(owner);
+    }
+
+    function unlockBodyScroll(owner) {
+      scrollLockOwners.delete(owner);
+
+      if (scrollLockOwners.size === 0) {
+        document.body.style.overflow = savedBodyOverflow;
+        document.body.style.paddingRight = savedBodyPaddingRight;
+      }
+    }
+
+    function initTabs(root) {
+      const tablist = root.querySelector('[role="tablist"]');
+      if (!tablist) return;
+
+      const tabs = Array.from(root.querySelectorAll('[data-pdp-tab]'));
+      if (tabs.length === 0) return;
+
+      function selectTab(tab, moveFocus) {
+        tabs.forEach((item) => {
+          const isSelected = item === tab;
+          const panel = document.getElementById(item.getAttribute('aria-controls'));
+
+          item.setAttribute('aria-selected', isSelected ? 'true' : 'false');
+          item.setAttribute('tabindex', isSelected ? '0' : '-1');
+
+          if (panel) panel.hidden = !isSelected;
+        });
+
+        if (moveFocus) tab.focus();
+      }
+
+      tabs.forEach((tab) => {
+        tab.addEventListener('click', () => selectTab(tab, false));
+      });
+
+      tablist.addEventListener('keydown', (event) => {
+        const currentIndex = tabs.indexOf(document.activeElement);
+        if (currentIndex === -1) return;
+
+        let nextIndex = null;
+
+        switch (event.key) {
+          case 'ArrowRight':
+          case 'ArrowDown':
+            nextIndex = (currentIndex + 1) % tabs.length;
+            break;
+          case 'ArrowLeft':
+          case 'ArrowUp':
+            nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+            break;
+          case 'Home':
+            nextIndex = 0;
+            break;
+          case 'End':
+            nextIndex = tabs.length - 1;
+            break;
+          default:
+            return;
+        }
+
+        event.preventDefault();
+        selectTab(tabs[nextIndex], true);
+      });
+    }
+
+    function initModal(root) {
+      const modal = root.querySelector('[data-pdp-modal]');
+      if (!modal || typeof modal.showModal !== 'function') return;
+
+      const openers = Array.from(root.querySelectorAll('[data-pdp-modal-open]'));
+      const closers = Array.from(modal.querySelectorAll('[data-pdp-modal-close]'));
+
+      openers.forEach((opener) => {
+        opener.addEventListener('click', () => {
+          if (modal.open) return;
+
+          // showModal() handles Esc, the focus trap and focus restore natively.
+          modal.showModal();
+          lockBodyScroll(modal);
+          opener.setAttribute('aria-expanded', 'true');
+        });
+      });
+
+      closers.forEach((closer) => {
+        closer.addEventListener('click', () => modal.close());
+      });
+
+      // Clicks on ::backdrop are dispatched on the dialog itself.
+      modal.addEventListener('click', (event) => {
+        if (event.target === modal) modal.close();
+      });
+
+      modal.addEventListener('close', () => {
+        unlockBodyScroll(modal);
+        openers.forEach((opener) => opener.setAttribute('aria-expanded', 'false'));
+      });
+    }
+
+    function initRoot(root) {
+      if (root.dataset.pdpReady === 'true') return;
+      root.dataset.pdpReady = 'true';
+
+      initTabs(root);
+      initModal(root);
+    }
+
+    function initAll(scope) {
+      const container = scope && scope.querySelectorAll ? scope : document;
+
+      if (container.matches && container.matches(ROOT_SELECTOR)) initRoot(container);
+      container.querySelectorAll(ROOT_SELECTOR).forEach(initRoot);
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => initAll());
+    } else {
+      initAll();
+    }
+
+    document.addEventListener('shopify:section:load', (event) => initAll(event.target));
+    document.addEventListener('shopify:block:select', (event) => initAll(event.target));
+
+    document.addEventListener('shopify:section:unload', (event) => {
+      event.target.querySelectorAll('[data-pdp-modal]').forEach((modal) => {
+        if (modal.open) modal.close();
+        unlockBodyScroll(modal);
+      });
+    });
+  })();
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Pestañas de producto",
+  "tag": null,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Lee los metafields del producto: custom.benefits_list, custom.featured_ingredients, custom.dosage_table, custom.dosage_tip, custom.full_ingredients_content y custom.modal_badges."
+    },
+    {
+      "type": "header",
+      "content": "Pestañas"
+    },
+    {
+      "type": "text",
+      "id": "tab_benefits_label",
+      "label": "Etiqueta pestaña 1",
+      "default": "Ventajas"
+    },
+    {
+      "type": "text",
+      "id": "tab_ingredients_label",
+      "label": "Etiqueta pestaña 2",
+      "default": "Ingredientes"
+    },
+    {
+      "type": "text",
+      "id": "tab_dosage_label",
+      "label": "Etiqueta pestaña 3",
+      "default": "Dosificación"
+    },
+    {
+      "type": "text",
+      "id": "tablist_label",
+      "label": "Nombre accesible del grupo de pestañas",
+      "default": "Información del producto",
+      "info": "Se usa como aria-label del grupo de pestañas."
+    },
+    {
+      "type": "text",
+      "id": "scoop_unit_label_singular",
+      "label": "Unidad de cucharitas (singular)",
+      "default": "medida",
+      "info": "Se anuncia junto al número de cucharitas en lectores de pantalla."
+    },
+    {
+      "type": "text",
+      "id": "scoop_unit_label",
+      "label": "Unidad de cucharitas (plural)",
+      "default": "medidas"
+    },
+    {
+      "type": "text",
+      "id": "ingredients_heading",
+      "label": "Encabezado del panel de ingredientes",
+      "default": "¿Qué contiene este producto?"
+    },
+    {
+      "type": "text",
+      "id": "dosage_weight_column_label",
+      "label": "Columna de peso",
+      "default": "Peso"
+    },
+    {
+      "type": "text",
+      "id": "dosage_amount_column_label",
+      "label": "Columna de dosis",
+      "default": "Dosis diaria"
+    },
+    {
+      "type": "text",
+      "id": "dosage_tip_label",
+      "label": "Prefijo del consejo de dosificación",
+      "default": "Consejo:"
+    },
+    {
+      "type": "header",
+      "content": "Modal de ingredientes"
+    },
+    {
+      "type": "text",
+      "id": "modal_cta_label",
+      "label": "Texto del botón",
+      "default": "Ver todos los ingredientes"
+    },
+    {
+      "type": "text",
+      "id": "modal_title",
+      "label": "Título del modal",
+      "default": "Todos los ingredientes"
+    },
+    {
+      "type": "text",
+      "id": "modal_close_label",
+      "label": "Etiqueta del botón de cierre",
+      "default": "Cerrar"
+    },
+    {
+      "type": "header",
+      "content": "Colores"
+    },
+    {
+      "type": "color",
+      "id": "color_primary",
+      "label": "Verde bosque (títulos e ingredientes)",
+      "default": "#0E3B2E"
+    },
+    {
+      "type": "color",
+      "id": "color_tab_active",
+      "label": "Verde de la pestaña activa",
+      "default": "#1E8A5E"
+    },
+    {
+      "type": "color",
+      "id": "color_surface",
+      "label": "Fondo suave del contenedor",
+      "default": "#f7f9f8"
+    },
+    {
+      "type": "color",
+      "id": "color_accent",
+      "label": "Coral (botón de ingredientes)",
+      "default": "#E0715A"
+    },
+    {
+      "type": "color",
+      "id": "color_check",
+      "label": "Verde del check de ventajas",
+      "default": "#1E8A5E"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Pestañas de producto",
+      "category": "Producto"
+    }
+  ]
+}
+{% endschema %}
